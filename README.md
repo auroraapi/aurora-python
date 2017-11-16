@@ -1,1 +1,1 @@
-# python-sdk
+# Aurora Python SDK
