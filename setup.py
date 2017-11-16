@@ -34,7 +34,11 @@ setup(
 
 		# Indicate who your project is intended for
 		'Intended Audience :: Developers',
-		'Topic :: Software Development :: API',
+		'Topic :: Software Development :: Libraries :: Python Modules',
+		'Topic :: Multimedia :: Sound/Audio :: Speech',
+		'Topic :: Multimedia :: Sound/Audio :: Sound Synthesis',
+		'Topic :: Internet',
+
 
 		# Pick your license as you wish (should match "license" above)
 		'License :: OSI Approved :: MIT License',
