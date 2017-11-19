@@ -55,4 +55,28 @@ audio.play()
 audio.write_to_file("test.wav")
 ```
 
+### Speech to Text (STT)
 
+```python
+# Import the package
+import auroraapi as aurora
+
+# Set your application settings
+aurora.APP_ID    = "YOUR_APP_ID"    # put your app ID here
+aurora.APP_TOKEN = "YOUR_APP_TOKEN" # put your app token here
+
+# you can use audio generated from a previous API call
+a = aurora.TTS.text_to_speech("Hello world")
+
+# or you can load a WAV file from disk
+# a = aurora.audio.AudioFile.create_from_filename("file.wav")
+
+# or you can create an audio from an already-open handle
+# make sure it was opened in binary mode
+# with open("file.wav", "rb") as f:
+#	a = aurora.audio.AudioFile.create_from_file(f)
+
+# call the aurora API with the AudioFile object
+p = aurora.STT.speech_to_text(a)
+# {u'score': -4364, u'prediction': u'hello world', u'time': 368}
+```

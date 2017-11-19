@@ -35,6 +35,11 @@ class AudioFile(object):
 		return AudioFile(f.read())
 
 	@staticmethod
+	def create_from_filename(f):
+		with open(f, 'rb') as file:
+			return AudioFile(file.read())
+
+	@staticmethod
 	def create_from_stream(s):
 		return AudioFile(s.readall())
 
