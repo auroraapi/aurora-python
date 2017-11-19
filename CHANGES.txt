@@ -1,0 +1,8 @@
+0.0.2
+--------
+- Added speech to text (basic)
+
+0.0.1
+--------
+- Initial commit
+- Added text to speech
