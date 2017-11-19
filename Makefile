@@ -1,6 +1,8 @@
 PACKAGE_NAME =    $(shell python setup.py --name)
 PACKAGE_VERSION = $(shell python setup.py --version)
 
+.PHONY: dist
+
 dist:
 	python setup.py sdist
 
