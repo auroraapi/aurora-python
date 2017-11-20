@@ -1,3 +1,8 @@
+0.0.3
+--------
+- Changed interface to use Text and Speech chaining
+- Added listening/microphone capabilities
+
 0.0.2
 --------
 - Added speech to text (basic)
