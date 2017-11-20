@@ -27,7 +27,6 @@ def get_stt(app_id, app_token, audio):
 		"X-Application-Token": app_token,
 	}
 
-	print(len(audio.data))
 	files = {
 		"audio": audio.data
 	}
