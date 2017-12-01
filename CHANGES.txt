@@ -1,3 +1,8 @@
+0.0.4
+--------
+- Use HTTPS for API endpoints
+- Update silence threshold
+
 0.0.3
 --------
 - Changed interface to use Text and Speech chaining
