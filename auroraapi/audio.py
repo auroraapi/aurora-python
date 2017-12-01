@@ -3,7 +3,7 @@ import StringIO
 
 BUF_SIZE      = (2 ** 10)
 MAX_THRESH    = (2 ** 14)
-SILENT_THRESH = (2 ** 9)
+SILENT_THRESH = (2 ** 10)
 NUM_CHANNELS  = 1
 FORMAT        = pyaudio.paInt16
 RATE          = 16000

@@ -1,7 +1,7 @@
 import audio
 import requests, functools
 
-BASE_URL = "http://api.auroraapi.com"
+BASE_URL = "https://api.auroraapi.com"
 TTS_URL = BASE_URL + "/v1/tts/"
 STT_URL = BASE_URL + "/v1/stt/"
 
