@@ -28,7 +28,7 @@ def get_stt(app_id, app_token, audio):
 	}
 
 	files = {
-		"audio": audio.data
+		"audio": audio.get_wav()
 	}
 
 	r = requests.post(STT_URL, headers=headers, files=files)

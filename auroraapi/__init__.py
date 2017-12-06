@@ -31,7 +31,7 @@ class Speech(object):
 
 	def to_text(self):
 		""" Convert speech to text and get the prediction """
-		return Text(api.get_stt(APP_ID, APP_TOKEN, self.audio)["prediction"])
+		return Text(api.get_stt(APP_ID, APP_TOKEN, self.audio)["transcript"])
 
 	@staticmethod
 	def continuously_listen(length=0, silence_len=2.5):
@@ -42,4 +42,4 @@ class Speech(object):
 	@staticmethod
 	def listen(length=0, silence_len=2.5):
 		""" Listen with the given parameters and return a speech segment """
-		return Speech(audio.AudioFile.from_recording(length=length, silence_len=silence_len).trim_silent().pad_left(0.1))
+		return Speech(audio.AudioFile.from_recording(length=length, silence_len=silence_len))

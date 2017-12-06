@@ -1,3 +1,6 @@
+from pydub import AudioSegment, silence
+from pydub.utils import make_chunks
+from pyaudio import PyAudio
 import array, io, pyaudio, sys, time, wave
 import StringIO
 
@@ -9,75 +12,51 @@ FORMAT        = pyaudio.paInt16
 RATE          = 16000
 
 class AudioFile(object):
-	def __init__(self, buff):
-		self.data = buff
+	def __init__(self, audio):
+		self.audio = audio
 
 	def write_to_file(self, fname):
-		with open(fname, 'wb') as f:
-			f.write(self.data)
+		self.audio.export(fname, format="wav")
 
-	def get_wav_frames(self):
-		wav_data = io.BytesIO(self.data)
-		wav_file = wave.open(wav_data, 'rb')
-		return wav_file.readframes(wav_file.getnframes())
-
-	def set_data(self, data):
-		old_wav_data = io.BytesIO(self.data)
-		old_wav_file = wave.open(old_wav_data, 'rb')
-
-		new_wav_data = StringIO.StringIO()
-		new_wav_file = wave.open(new_wav_data, 'wb')
-		new_wav_file.setparams(old_wav_file.getparams())
-		new_wav_file.writeframes(data)
-		new_wav_file.close()
-
-		self.data = new_wav_data.getvalue()
-		return self
+	def get_wav(self):
+		wav_data = StringIO.StringIO()
+		wav = wave.open(wav_data, "wb")
+		wav.setparams((self.audio.channels, self.audio.sample_width, self.audio.frame_rate, 0, 'NONE', 'not compressed'))
+		wav.writeframes(self.audio.raw_data)
+		wav.close()
+		return wav_data.getvalue()
 
 	def pad(self, seconds):
-		return self.pad_left(seconds).pad_right(seconds)
+		self.audio = AudioSegment.silent(duration=seconds*1000, frame_rate=16000) + self.audio + AudioSegment.silent(duration=seconds*1000, frame_rate=16000)
+		return self
 
 	def pad_left(self, seconds):
-		d = self.get_wav_frames()
-		d = "".join([chr(0) for i in range(int(seconds*RATE))]) + d
-		return self.set_data(d)
+		self.audio = AudioSegment.silent(duration=seconds*1000, frame_rate=16000) + self.audio
+		return self
 
 	def pad_right(self, seconds):
-		d = self.get_wav_frames()
-		d = d + "".join([chr(0) for i in range(int(seconds*RATE))])
-		return self.set_data(d)
+		self.audio = self.audio + AudioSegment.silent(duration=seconds*1000, frame_rate=16000)
+		return self
 
 	def trim_silent(self):
-		d = array.array('h', self.get_wav_frames())
-		left, right = 0, len(d) - 1
-		while left < right:
-			if abs(d[left]) > SILENT_THRESH:
-				break
-			left += 1
-		while right > left:
-			if abs(d[right]) > SILENT_THRESH:
-				break
-			right -= 1
+		a = AudioSegment.empty()
+		for seg in silence.detect_nonsilent(self.audio):
+			a = a.append(self.audio[seg[0]:seg[1]], crossfade=0)
 
-		return self.set_data((d[left:right]).tostring())
+		self.audio = a
+		return self
 
 	def play(self):
-		bfr = io.BytesIO(self.data)
-		wf = wave.openfp(bfr, 'rb')
-
 		p = pyaudio.PyAudio()
 		stream = p.open(
-			rate=wf.getframerate(),
-			format=p.get_format_from_width(wf.getsampwidth()),
-			channels=wf.getnchannels(),
+			rate=self.audio.frame_rate,
+			format=p.get_format_from_width(self.audio.sample_width),
+			channels=self.audio.channels,
 			output=True
 		)
 
-		while True:
-			data = wf.readframes(BUF_SIZE)
-			stream.write(data)
-			if len(data) == 0:
-				break
+		for chunk in make_chunks(self.audio, 64):
+			stream.write(chunk.raw_data)
 
 		stream.stop_stream()
 		stream.close()
@@ -91,9 +70,9 @@ class AudioFile(object):
 			rate=RATE,
 			format=FORMAT,
 			channels=NUM_CHANNELS,
+			frames_per_buffer=BUF_SIZE,
 			input=True,
 			output=True,
-			frames_per_buffer=BUF_SIZE
 		)
 
 		data = array.array('h')
@@ -117,28 +96,27 @@ class AudioFile(object):
 		wav.setparams((NUM_CHANNELS, p.get_sample_size(FORMAT), RATE, 0, 'NONE', 'not compressed'))
 		wav.writeframes(data.tostring())
 		wav.close()
-		return AudioFile(wav_data.getvalue())
+		return AudioFile.create_from_wav_data(wav_data.getvalue())
 
 	@staticmethod
 	def create_from_wav_data(d):
-		return AudioFile(d)
+		return AudioFile(AudioSegment(data=d))
 
 	@staticmethod
 	def create_from_file(f):
-		return AudioFile(f.read())
+		return AudioFile(AudioSegment(data=d.read()))
 
 	@staticmethod
 	def create_from_filename(f):
-		with open(f, 'rb') as file:
-			return AudioFile(file.read())
+		return AudioFile(AudioSegment.from_file(f, format="wav"))
 
 	@staticmethod
 	def create_from_stream(s):
-		return AudioFile(s.readall())
+		return AudioFile(AudioSegment(data=s.readall()))
 
 	@staticmethod
 	def create_from_http_stream(s):
-		return AudioFile(s.read())
+		return AudioFile(AudioSegment(data=s.read()))
 
 def is_silent(data):
 	return max(data) < SILENT_THRESH
