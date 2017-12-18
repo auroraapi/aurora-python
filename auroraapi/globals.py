@@ -1,0 +1,3 @@
+APP_ID = None
+APP_TOKEN = None
+DEVICE_ID = None

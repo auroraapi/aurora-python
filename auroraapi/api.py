@@ -1,4 +1,4 @@
-import audio, pprint
+import audio, globals
 import requests, functools
 
 BASE_URL = "https://api.auroraapi.com"
@@ -8,10 +8,11 @@ STT_URL = BASE_URL + "/v1/stt/"
 class APIException(Exception):
 	""" Raise an exception when querying the API """
 
-def get_tts(app_id, app_token, text):
+def get_tts(text):
 	headers = {
-		"X-Application-ID": app_id,
-		"X-Application-Token": app_token,
+		"X-Application-ID": globals.APP_ID,
+		"X-Application-Token": globals.APP_TOKEN,
+		"X-Device-ID": globals.DEVICE_ID,
 	}
 
 	r = requests.get(TTS_URL, params=[("text", text)], headers=headers, stream=True)
@@ -23,10 +24,11 @@ def get_tts(app_id, app_token, text):
 	r.raw.read = functools.partial(r.raw.read, decode_content=True)
 	return audio.AudioFile.create_from_http_stream(r.raw)
 
-def get_stt(app_id, app_token, audio):
+def get_stt(audio):
 	headers = {
-		"X-Application-ID": app_id,
-		"X-Application-Token": app_token,
+		"X-Application-ID": globals.APP_ID,
+		"X-Application-Token": globals.APP_TOKEN,
+		"X-Device-ID": globals.DEVICE_ID,
 	}
 
 	files = {

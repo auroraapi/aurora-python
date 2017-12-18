@@ -1,3 +1,7 @@
+0.0.7
+------
+- Functions to set keys and IDs
+
 0.0.6
 -------
 - Better error handling

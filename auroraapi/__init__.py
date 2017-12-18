@@ -1,7 +1,17 @@
-import api, audio
+import api, audio, globals
 
-APP_ID = None
-APP_TOKEN = None
+###########################################################
+## General Methods                                       ##
+###########################################################
+
+def set_app_id(id):
+	globals.APP_ID = id
+
+def set_app_token(token):
+	globals.APP_TOKEN = token
+
+def set_device_id(id):
+	globals.DEVICE_ID = id
 
 ###########################################################
 ## Text to Speech                                        ##
@@ -15,7 +25,7 @@ class Text(object):
 
 	def to_speech(self):
 		""" Convert speech to text """
-		return Speech(api.get_tts(APP_ID, APP_TOKEN, self.text))
+		return Speech(api.get_tts(self.text))
 
 ###########################################################
 ## Speech to Text                                        ##
@@ -31,7 +41,7 @@ class Speech(object):
 
 	def to_text(self):
 		""" Convert speech to text and get the prediction """
-		return Text(api.get_stt(APP_ID, APP_TOKEN, self.audio)["transcript"])
+		return Text(api.get_stt(self.audio)["transcript"])
 
 	@staticmethod
 	def continuously_listen(length=0, silence_len=2.5):
