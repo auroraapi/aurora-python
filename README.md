@@ -136,9 +136,57 @@ for speech in aurora.Speech.continuously_listen(length=3.0):
 	print(p.text)
 ```
 
+### Interpret (Language Understanding)
 
+The interpret service allows you to take any Aurora `Text` object and understand the user's intent and extract additional query information. Interpret can only be called on `Text` objects and return `Interpret` objects after completion. To convert a user's speech into and `Interpret` object, it must be converted to text first.
 
+#### Basic example
 
+```python
+# create a Text object
+text = aurora.Text("what is the time in los angeles")
 
+# call the interpret service. This returns an `Interpret` object.
+i = text.interpret()
+
+# get the user's intent
+print(i.intent)   # time
+
+# get any additional information
+print(i.entities) # { "location": "los angeles" }
+
+```
+
+#### User query example
+
+```python
+while True:
+	# Repeatedly ask the user to enter a command
+	user_text = raw_input("Enter a command:")
+	if user_text == "quit":
+		break
+	
+	# Interpret and print the results
+	i = aurora.Text(user_text).interpret()
+	print(i.intent, i.entities)
+```
+
+#### Smart Lamp
+
+This example shows how easy it is to voice-enable a smart lamp. It responds to queries in the form of "turn on the lights" or "turn off the lamp". You define what `object` you're listening for (so that you can ignore queries like "turn on the music").
+
+```python
+valid_words = ["light", "lights", "lamp"]
+valid_entities = lambda d: "object" in d and d["object"] in valid_words
+
+for speech in aurora.Speech.continuously_listen(silence_len=1.0):
+	i = speech.to_text().interpret()
+	if i.intent == "turn_on" and valid_entities(i.entities):
+		# do something to actually turn on the lamp
+		print("Turning on the lamp")
+	elif i.intent == "turn_off" and valid_entities(i.entities):
+		# do something to actually turn off the lamp
+		print("Turning off the lamp")
+```
 
 

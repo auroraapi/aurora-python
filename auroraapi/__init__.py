@@ -26,6 +26,20 @@ class Text(object):
 	def to_speech(self):
 		""" Convert speech to text """
 		return Speech(api.get_tts(self.text))
+	
+	def interpret(self):
+		""" Interpret the text and return the results """
+		return Interpret(api.get_interpret(self.text))
+
+###########################################################
+## Interpret                                             ##
+###########################################################
+
+class Interpret(object):
+	def __init__(self, interpretation):
+		""" Construct an interpret object from the API response """
+		self.intent = interpretation["intent"]
+		self.entities = interpretation["entities"]
 
 ###########################################################
 ## Speech to Text                                        ##

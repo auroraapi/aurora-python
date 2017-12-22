@@ -1,3 +1,7 @@
+0.0.8
+------
+- Add interpret service
+
 0.0.7
 ------
 - Functions to set keys and IDs
