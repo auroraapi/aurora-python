@@ -64,7 +64,7 @@ class AudioFile(object):
 		return self
 
 	@staticmethod
-	def from_recording(length=0, silence_len=2.5):
+	def from_recording(length=0, silence_len=1.0):
 		p = pyaudio.PyAudio()
 		stream = p.open(
 			rate=RATE,
@@ -76,9 +76,8 @@ class AudioFile(object):
 		)
 
 		data = array.array('h')
-		if length == 0:
-			while len(data) == 0 or is_silent(data):
-				data = array.array('h', stream.read(BUF_SIZE, exception_on_overflow=False))
+		while len(data) == 0 or is_silent(data):
+			data = array.array('h', stream.read(BUF_SIZE, exception_on_overflow=False))
 
 		silent_for = 0
 		while True:

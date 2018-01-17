@@ -58,12 +58,12 @@ class Speech(object):
 		return Text(api.get_stt(self.audio)["transcript"])
 
 	@staticmethod
-	def continuously_listen(length=0, silence_len=2.5):
+	def continuously_listen(length=0, silence_len=1.0):
 		""" Continually listen and yield speech demarcated by silent periods """
 		while True:
 			yield Speech.listen(length, silence_len)
 
 	@staticmethod
-	def listen(length=0, silence_len=2.5):
+	def listen(length=0, silence_len=1.0):
 		""" Listen with the given parameters and return a speech segment """
 		return Speech(audio.AudioFile.from_recording(length=length, silence_len=silence_len))

@@ -44,8 +44,8 @@ First, make sure you have an account with [Aurora](http://dashboard.auroraapi.co
 import auroraapi as aurora
 
 # Set your application settings
-aurora.APP_ID    = "YOUR_APP_ID"    # put your app ID here
-aurora.APP_TOKEN = "YOUR_APP_TOKEN" # put your app token here
+aurora.set_app_id("YOUR_APP_ID")       # put your app ID here
+aurora.set_app_token("YOUR_APP_TOKEN") # put your app token here
 
 # query the TTS service
 speech = aurora.Text("Hello world").to_speech()
@@ -66,8 +66,8 @@ speech.audio.write_to_file("test.wav")
 import auroraapi as aurora
 
 # Set your application settings
-aurora.APP_ID    = "YOUR_APP_ID"    # put your app ID here
-aurora.APP_TOKEN = "YOUR_APP_TOKEN" # put your app token here
+aurora.set_app_id("YOUR_APP_ID")       # put your app ID here
+aurora.set_app_token("YOUR_APP_TOKEN") # put your app token here
 
 # load a WAV file
 a = aurora.audio.AudioFile.create_from_filename("test.wav")
@@ -103,12 +103,12 @@ print(p.text) # prints the prediction
 
 #### Listen for an unspecified amount of time
 
-Calling this API will start listening and will automatically stop listening after a certain amount of silence (default is 2.5 seconds).
+Calling this API will start listening and will automatically stop listening after a certain amount of silence (default is 1.0 seconds).
 ```python
-# Start listening until 2.5s of silence
+# Start listening until 1.0s of silence
 speech = aurora.Speech.listen()
-# Or specify your own silence timeout (1 second shown here)
-# speech = aurora.Speech.listen(silence_len=1.0)
+# Or specify your own silence timeout (0.5 seconds shown here)
+# speech = aurora.Speech.listen(silence_len=0.5)
 
 # Convert to text
 p = speech.to_text()
@@ -117,7 +117,7 @@ print(p.text) # prints the prediction
 
 #### Continuously listen
 
-Continuously listen and retrieve speech segments. Note: you can do anything with these speech segments, but here we'll convert them to text. Just like the previous example, these segments are demarcated by silence (2.5 seconds by default) and can be changed by passing the `silence_len` parameter. Additionally, you can make these segments fixed length (as in the example before the previous) by setting the `length` parameter.
+Continuously listen and retrieve speech segments. Note: you can do anything with these speech segments, but here we'll convert them to text. Just like the previous example, these segments are demarcated by silence (1.0 second by default) and can be changed by passing the `silence_len` parameter. Additionally, you can make these segments fixed length (as in the example before the previous) by setting the `length` parameter.
 
 ```python
 # Continuously listen and convert to speech (blocking example)
@@ -126,7 +126,7 @@ for speech in aurora.Speech.continuously_listen():
 	print(p.text)
 
 # Reduce the amount of silence in between speech segments
-for speech in aurora.Speech.continuously_listen(silence_len=1.0):
+for speech in aurora.Speech.continuously_listen(silence_len=0.5):
 	p = speech.to_text()
 	print(p.text)
 
@@ -154,7 +154,6 @@ print(i.intent)   # time
 
 # get any additional information
 print(i.entities) # { "location": "los angeles" }
-
 ```
 
 #### User query example
@@ -179,7 +178,7 @@ This example shows how easy it is to voice-enable a smart lamp. It responds to q
 valid_words = ["light", "lights", "lamp"]
 valid_entities = lambda d: "object" in d and d["object"] in valid_words
 
-for speech in aurora.Speech.continuously_listen(silence_len=1.0):
+for speech in aurora.Speech.continuously_listen(silence_len=0.5):
 	i = speech.to_text().interpret()
 	if i.intent == "turn_on" and valid_entities(i.entities):
 		# do something to actually turn on the lamp

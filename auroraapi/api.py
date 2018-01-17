@@ -1,7 +1,8 @@
 import audio, globals
-import requests, functools
+import requests, functools, json
 
-BASE_URL = "https://api.auroraapi.com"
+# BASE_URL = "https://api.auroraapi.com"
+BASE_URL = "http://localhost:3000"
 TTS_URL = BASE_URL + "/v1/tts/"
 STT_URL = BASE_URL + "/v1/stt/"
 INTERPRET_URL = BASE_URL + "/v1/interpret/"
@@ -15,6 +16,15 @@ class APIException(Exception):
 		self.type = type
 		self.message = message
 		super(APIException, self).__init__("[{}] {}".format(code, message))
+	
+	def __repr__(self):
+		return json.dumps({ 
+			"id": self.id,
+			"status": self.status,
+			"code": self.code,
+			"type": self.type,
+			"message": self.message
+		}, indent=2)
 
 def get_headers():
 	return {
