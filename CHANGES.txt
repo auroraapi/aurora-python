@@ -1,3 +1,9 @@
+0.0.9
+------
+- Change default silence length
+- Silence is trimmed even if unlimited recording length
+- Added string representation for exceptions
+
 0.0.8
 ------
 - Add interpret service
