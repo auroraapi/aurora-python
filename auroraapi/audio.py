@@ -14,6 +14,7 @@ RATE          = 16000
 class AudioFile(object):
 	def __init__(self, audio):
 		self.audio = audio
+		self.shouldStop = False
 
 	def write_to_file(self, fname):
 		self.audio.export(fname, format="wav")
@@ -56,12 +57,18 @@ class AudioFile(object):
 		)
 
 		for chunk in make_chunks(self.audio, 64):
+			if self.shouldStop:
+				self.shouldStop = False
+				break
 			stream.write(chunk.raw_data)
 
 		stream.stop_stream()
 		stream.close()
 		p.terminate()
 		return self
+
+	def stop(self):
+		self.shouldStop = True
 
 	@staticmethod
 	def from_recording(length=0, silence_len=1.0):
