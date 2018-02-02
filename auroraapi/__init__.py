@@ -23,7 +23,7 @@ class Text(object):
 		""" Initialize with some text """
 		self.text = text
 
-	def to_speech(self):
+	def speech(self):
 		""" Convert speech to text """
 		return Speech(api.get_tts(self.text))
 	
@@ -53,7 +53,7 @@ class Speech(object):
 		"""
 		self.audio = audio
 
-	def to_text(self):
+	def text(self):
 		""" Convert speech to text and get the prediction """
 		return Text(api.get_stt(self.audio)["transcript"])
 

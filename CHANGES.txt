@@ -1,3 +1,7 @@
+0.0.10
+------
+- INTERFACE CHANGED: 'to_speech' --> 'speech', 'to_text' --> 'text'
+
 0.0.9
 ------
 - Change default silence length

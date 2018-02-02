@@ -48,7 +48,7 @@ aurora.set_app_id("YOUR_APP_ID")       # put your app ID here
 aurora.set_app_token("YOUR_APP_TOKEN") # put your app token here
 
 # query the TTS service
-speech = aurora.Text("Hello world").to_speech()
+speech = aurora.Text("Hello world").speech()
 
 # play the resulting audio
 speech.audio.play()
@@ -76,18 +76,18 @@ a = aurora.audio.AudioFile.create_from_filename("test.wav")
 # with open("test.wav", "rb") as f:
 #   a = aurora.audio.AudioFile.create_from_file(f)
 
-p = aurora.Speech(a).to_text()
+p = aurora.Speech(a).text()
 print(p.text) # 'hello world'
 ```
 
 #### Convert a previous Text API call to Speech
 ```python
 # Call the TTS API to convert "Hello world" to speech
-speech = aurora.Text("Hello world").to_speech()
+speech = aurora.Text("Hello world").speech()
 
 # Previous API returned a Speech object, so we can just call
-# the to_text() method to get a prediction
-p = speech.to_text()
+# the text() method to get a prediction
+p = speech.text()
 print(p.text) # 'hello world'
 ```
 
@@ -97,7 +97,7 @@ print(p.text) # 'hello world'
 speech = aurora.Speech.listen(length=3)
 
 # Convert to text
-p = speech.to_text()
+p = speech.text()
 print(p.text) # prints the prediction
 ```
 
@@ -111,7 +111,7 @@ speech = aurora.Speech.listen()
 # speech = aurora.Speech.listen(silence_len=0.5)
 
 # Convert to text
-p = speech.to_text()
+p = speech.text()
 print(p.text) # prints the prediction
 ```
 
@@ -122,17 +122,17 @@ Continuously listen and retrieve speech segments. Note: you can do anything with
 ```python
 # Continuously listen and convert to speech (blocking example)
 for speech in aurora.Speech.continuously_listen():
-	p = speech.to_text()
+	p = speech.text()
 	print(p.text)
 
 # Reduce the amount of silence in between speech segments
 for speech in aurora.Speech.continuously_listen(silence_len=0.5):
-	p = speech.to_text()
+	p = speech.text()
 	print(p.text)
 
 # Fixed-length speech segments of 3 seconds
 for speech in aurora.Speech.continuously_listen(length=3.0):
-	p = speech.to_text()
+	p = speech.text()
 	print(p.text)
 ```
 
@@ -179,7 +179,7 @@ valid_words = ["light", "lights", "lamp"]
 valid_entities = lambda d: "object" in d and d["object"] in valid_words
 
 for speech in aurora.Speech.continuously_listen(silence_len=0.5):
-	i = speech.to_text().interpret()
+	i = speech.text().interpret()
 	if i.intent == "turn_on" and valid_entities(i.entities):
 		# do something to actually turn on the lamp
 		print("Turning on the lamp")
