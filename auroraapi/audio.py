@@ -110,7 +110,7 @@ class AudioFile(object):
 
 	@staticmethod
 	def create_from_file(f):
-		return AudioFile(AudioSegment(data=d.read()))
+		return AudioFile(AudioSegment(data=f.read()))
 
 	@staticmethod
 	def create_from_filename(f):
