@@ -1,3 +1,7 @@
+0.0.11
+------
+- fixed import bug in python 3
+
 0.0.10
 ------
 - INTERFACE CHANGED: 'to_speech' --> 'speech', 'to_text' --> 'text'
