@@ -44,7 +44,7 @@ def handle_error(r):
 			raise APIException(**r.json())
 		if r.status_code == 413:
 			raise APIException(code="RequestEntityTooLarge", message="Request entity too large")
-		raise APIException(r.text)
+		raise APIException(message=r.text)
 
 def get_tts(text):
 	r = requests.get(TTS_URL, params=[("text", text)], headers=get_headers(), stream=True)

@@ -4,9 +4,9 @@ from pyaudio import PyAudio
 import array, io, pyaudio, sys, time, wave
 
 try:
-	import StringIO
+	from StringIO import StringIO as BytesIO
 except:
-	from io import StringIO
+	from io import BytesIO
 
 BUF_SIZE      = (2 ** 10)
 MAX_THRESH    = (2 ** 14)
@@ -24,7 +24,7 @@ class AudioFile(object):
 		self.audio.export(fname, format="wav")
 
 	def get_wav(self):
-		wav_data = StringIO.StringIO()
+		wav_data = BytesIO()
 		wav = wave.open(wav_data, "wb")
 		wav.setparams((self.audio.channels, self.audio.sample_width, self.audio.frame_rate, 0, 'NONE', 'not compressed'))
 		wav.writeframes(self.audio.raw_data)
@@ -101,7 +101,7 @@ class AudioFile(object):
 			if length > 0 and len(data) >= length*RATE:
 				break
 
-		wav_data = StringIO.StringIO()
+		wav_data = BytesIO()
 		wav = wave.open(wav_data, "wb")
 		wav.setparams((NUM_CHANNELS, p.get_sample_size(FORMAT), RATE, 0, 'NONE', 'not compressed'))
 		wav.writeframes(data.tostring())
