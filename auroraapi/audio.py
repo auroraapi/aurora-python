@@ -2,7 +2,11 @@ from pydub import AudioSegment, silence
 from pydub.utils import make_chunks
 from pyaudio import PyAudio
 import array, io, pyaudio, sys, time, wave
-import StringIO
+
+try:
+	import StringIO
+except:
+	from io import StringIO
 
 BUF_SIZE      = (2 ** 10)
 MAX_THRESH    = (2 ** 14)

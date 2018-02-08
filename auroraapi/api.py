@@ -1,5 +1,11 @@
-import audio, globals
 import requests, functools, json
+
+try:
+	from audio import *
+	from globals import __store
+except:
+	from .audio import *
+	from .globals import __store
 
 BASE_URL = "https://api.auroraapi.com"
 TTS_URL = BASE_URL + "/v1/tts/"
@@ -27,9 +33,9 @@ class APIException(Exception):
 
 def get_headers():
 	return {
-		"X-Application-ID": globals.APP_ID,
-		"X-Application-Token": globals.APP_TOKEN,
-		"X-Device-ID": globals.DEVICE_ID,
+		"X-Application-ID": __store.app_id,
+		"X-Application-Token": __store.app_token,
+		"X-Device-ID": __store.device_id,
 	}
 
 def handle_error(r):
@@ -45,7 +51,7 @@ def get_tts(text):
 	handle_error(r)
 
 	r.raw.read = functools.partial(r.raw.read, decode_content=True)
-	return audio.AudioFile.create_from_http_stream(r.raw)
+	return AudioFile.create_from_http_stream(r.raw)
 
 def get_interpret(text):
 	r = requests.get(INTERPRET_URL, params=[("text", text)], headers=get_headers())

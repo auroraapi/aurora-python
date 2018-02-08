@@ -1,17 +1,24 @@
-import api, audio, globals
+try:
+	from api import *
+	from audio import *
+	from globals import __store
+except:
+	from .api import *
+	from .audio import *
+	from .globals import __store
 
 ###########################################################
 ## General Methods                                       ##
 ###########################################################
 
 def set_app_id(id):
-	globals.APP_ID = id
+	__store.app_id = id
 
 def set_app_token(token):
-	globals.APP_TOKEN = token
+	__store.app_token = token
 
 def set_device_id(id):
-	globals.DEVICE_ID = id
+	__store.device_id = id
 
 ###########################################################
 ## Text to Speech                                        ##
@@ -25,11 +32,11 @@ class Text(object):
 
 	def speech(self):
 		""" Convert speech to text """
-		return Speech(api.get_tts(self.text))
+		return Speech(get_tts(self.text))
 	
 	def interpret(self):
 		""" Interpret the text and return the results """
-		return Interpret(api.get_interpret(self.text))
+		return Interpret(get_interpret(self.text))
 
 ###########################################################
 ## Interpret                                             ##
@@ -55,7 +62,7 @@ class Speech(object):
 
 	def text(self):
 		""" Convert speech to text and get the prediction """
-		return Text(api.get_stt(self.audio)["transcript"])
+		return Text(get_stt(self.audio)["transcript"])
 
 	@staticmethod
 	def continuously_listen(length=0, silence_len=1.0):
@@ -66,4 +73,4 @@ class Speech(object):
 	@staticmethod
 	def listen(length=0, silence_len=1.0):
 		""" Listen with the given parameters and return a speech segment """
-		return Speech(audio.AudioFile.from_recording(length=length, silence_len=silence_len))
+		return Speech(AudioFile.from_recording(length=length, silence_len=silence_len))
