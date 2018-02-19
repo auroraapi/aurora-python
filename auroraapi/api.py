@@ -1,4 +1,4 @@
-import requests, functools, json
+import requests, functools, json, inspect
 
 try:
 	from audio import *
@@ -58,7 +58,13 @@ def get_interpret(text):
 	handle_error(r)
 	return r.json()
 
-def get_stt(audio):
-	r = requests.post(STT_URL, files={ "audio": audio.get_wav() }, headers=get_headers())
+def get_stt(audio, stream=False):
+	# audio can either be an AudioFile (in case the all of the data is known) or
+	# it can be a generator function, which emits data as it gets known. We need
+	# to modify the request based on whether stream is True, in which case we assume
+	# that audio is a generator function
+
+	d = audio() if stream else audio.get_wav()
+	r = requests.post(STT_URL, data=d, headers=get_headers())
 	handle_error(r)
 	return r.json()

@@ -65,12 +65,22 @@ class Speech(object):
 		return Text(get_stt(self.audio)["transcript"])
 
 	@staticmethod
+	def listen(length=0, silence_len=1.0):
+		""" Listen with the given parameters and return a speech segment """
+		return Speech(AudioFile.from_recording(length=length, silence_len=silence_len))
+
+	@staticmethod
 	def continuously_listen(length=0, silence_len=1.0):
 		""" Continually listen and yield speech demarcated by silent periods """
 		while True:
 			yield Speech.listen(length, silence_len)
 
 	@staticmethod
-	def listen(length=0, silence_len=1.0):
-		""" Listen with the given parameters and return a speech segment """
-		return Speech(AudioFile.from_recording(length=length, silence_len=silence_len))
+	def listen_and_transcribe(length=0, silence_len=1.0):
+		return Text(get_stt(functools.partial(AudioFile.stream_audio, length, silence_len), stream=True)["transcript"])
+	
+	@staticmethod
+	def continuously_listen_and_transcribe(length=0, silence_len=1.0):
+		while True:
+			yield Speech.listen_and_transcribe(length, silence_len)
+	

@@ -76,37 +76,31 @@ class AudioFile(object):
 
 	@staticmethod
 	def from_recording(length=0, silence_len=1.0):
-		p = pyaudio.PyAudio()
-		stream = p.open(
-			rate=RATE,
-			format=FORMAT,
-			channels=NUM_CHANNELS,
-			frames_per_buffer=BUF_SIZE,
-			input=True,
-			output=True,
-		)
-
 		data = array.array('h')
-		while len(data) == 0 or is_silent(data):
-			data = array.array('h', stream.read(BUF_SIZE, exception_on_overflow=False))
+		for chunk in record(length, silence_len):
+			data.extend(chunk)
 
-		silent_for = 0
-		while True:
-			d = array.array('h', stream.read(BUF_SIZE, exception_on_overflow=False))
-			silent_for = silent_for + (len(d)/float(RATE)) if is_silent(d) else 0
-			data.extend(d)
-
-			if length == 0 and silent_for > silence_len:
-				break
-			if length > 0 and len(data) >= length*RATE:
-				break
-
+		p = pyaudio.PyAudio()
 		wav_data = BytesIO()
 		wav = wave.open(wav_data, "wb")
 		wav.setparams((NUM_CHANNELS, p.get_sample_size(FORMAT), RATE, 0, 'NONE', 'not compressed'))
 		wav.writeframes(data.tostring())
 		wav.close()
 		return AudioFile.create_from_wav_data(wav_data.getvalue())
+	
+	@staticmethod
+	def stream_audio(length=0, silence_len=1.0):
+		# create fake WAV and yield it to get a WAV header
+		p = pyaudio.PyAudio()
+		wav_data = BytesIO()
+		wav = wave.open(wav_data, "wb")
+		wav.setparams((NUM_CHANNELS, p.get_sample_size(FORMAT), RATE, 0, 'NONE', 'not compressed'))
+		wav.close()
+		yield wav_data.getvalue()
+
+		# yield audio until done listening
+		for chunk in record(length, silence_len):
+			yield chunk.tostring()
 
 	@staticmethod
 	def create_from_wav_data(d):
@@ -130,3 +124,34 @@ class AudioFile(object):
 
 def is_silent(data):
 	return max(data) < SILENT_THRESH
+
+def record(length=0, silence_len=1.0):
+	p = pyaudio.PyAudio()
+	stream = p.open(
+		rate=RATE,
+		format=FORMAT,
+		channels=NUM_CHANNELS,
+		frames_per_buffer=BUF_SIZE,
+		input=True,
+		output=True,
+	)
+
+	data = array.array('h')
+	while len(data) == 0 or is_silent(data):
+		data = array.array('h', stream.read(BUF_SIZE, exception_on_overflow=False))
+
+	silent_for = 0
+	bytes_read = 0
+	while True:
+		d = array.array('h', stream.read(BUF_SIZE, exception_on_overflow=False))
+		silent_for = silent_for + (len(d)/float(RATE)) if is_silent(d) else 0
+		bytes_read += len(d)
+		yield d
+
+		if length == 0 and silent_for > silence_len:
+			break
+		if length > 0 and bytes_read >= length*RATE:
+			break
+
+	stream.stop_stream()
+	stream.close()
