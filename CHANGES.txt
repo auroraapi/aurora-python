@@ -1,3 +1,10 @@
+0.0.13
+------
+- added listen_and_transcribe, continuous transcription
+- refactored audiofile
+- breaking change: STT api uses body instead of multipart upload
+  - this means previous versions of the SDK will not longer work
+
 0.0.12
 ------
 - fixed other python 2/3 library discrepancies

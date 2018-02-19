@@ -136,6 +136,19 @@ for speech in aurora.Speech.continuously_listen(length=3.0):
 	print(p.text)
 ```
 
+#### Listen and Transcribe
+
+If you already know that you wanted the recorded speech to be converted to text, you can do it in one step, reducing the amount of code you need to write and also reducing latency. Using the `listen_and_transcribe` method, the audio that is recorded automatically starts uploading as soon as you call the method and transcription begins. When the audio recording ends, you get back the final transcription.
+
+```python
+text = aurora.Speech.listen_and_transcribe(silence_len=0.5):
+print("You said: {}".format(text.text))
+
+# You can also use this in the same way as `continuously_listen`
+for text in aurora.Speech.continuously_listen_and_transcribe(silence_len=0.5):
+	print("You said: {}".format(text.text))
+```
+
 ### Interpret (Language Understanding)
 
 The interpret service allows you to take any Aurora `Text` object and understand the user's intent and extract additional query information. Interpret can only be called on `Text` objects and return `Interpret` objects after completion. To convert a user's speech into and `Interpret` object, it must be converted to text first.
