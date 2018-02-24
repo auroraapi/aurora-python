@@ -1,5 +1,5 @@
 import requests, functools, json, inspect
-from auroraapi.globals import __store
+from auroraapi.globals import _config
 from auroraapi.audio import AudioFile
 
 BASE_URL = "https://api.auroraapi.com"
@@ -28,9 +28,9 @@ class APIException(Exception):
 
 def get_headers():
 	return {
-		"X-Application-ID": __store.app_id,
-		"X-Application-Token": __store.app_token,
-		"X-Device-ID": __store.device_id,
+		"X-Application-ID": _config.app_id,
+		"X-Application-Token": _config.app_token,
+		"X-Device-ID": _config.device_id,
 	}
 
 def handle_error(r):

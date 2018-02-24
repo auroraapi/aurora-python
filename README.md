@@ -17,7 +17,6 @@ The Python SDK currently does not bundle the necessary system headers and binari
 
 ```
 $ brew install portaudio
-$ pip install pyaudio
 $ pip install auroraapi
 ```
 
@@ -42,13 +41,14 @@ First, make sure you have an account with [Aurora](http://dashboard.auroraapi.co
 ```python
 # Import the package
 import auroraapi as aurora
+from auroraapi.text import Text
 
 # Set your application settings
-aurora.set_app_id("YOUR_APP_ID")       # put your app ID here
-aurora.set_app_token("YOUR_APP_TOKEN") # put your app token here
+aurora.config.app_id    = "YOUR_APP_ID"     # put your app ID here
+aurora.config.app_token = "YOUR_APP_TOKEN"  # put your app token here
 
 # query the TTS service
-speech = aurora.Text("Hello world").speech()
+speech = Text("Hello world").speech()
 
 # play the resulting audio
 speech.audio.play()
@@ -64,26 +64,27 @@ speech.audio.write_to_file("test.wav")
 ```python
 # Import the package
 import auroraapi as aurora
+from auroraapi.audio import AudioFile
+from auroraapi.speech import Speech
 
 # Set your application settings
-aurora.set_app_id("YOUR_APP_ID")       # put your app ID here
-aurora.set_app_token("YOUR_APP_TOKEN") # put your app token here
+aurora.config.app_id    = "YOUR_APP_ID"      # put your app ID here
+aurora.config.app_token = "YOUR_APP_TOKEN"   # put your app token here
 
-# load a WAV file
-a = aurora.audio.AudioFile.create_from_filename("test.wav")
-
-# or open an already-open file
-# with open("test.wav", "rb") as f:
-#   a = aurora.audio.AudioFile.create_from_file(f)
-
-p = aurora.Speech(a).text()
-print(p.text) # 'hello world'
+# open an existing WAV file (16-bit, mono, 16KHz WAV PCM)
+with open("test.wav", "rb") as f:
+	a = AudioFile(f.read())
+	p = Speech(a).text()
+	print(p.text) # 'hello world'
 ```
 
 #### Convert a previous Text API call to Speech
 ```python
+from auroraapi.text import Text
+from auroraapi.speech import Speech
+
 # Call the TTS API to convert "Hello world" to speech
-speech = aurora.Text("Hello world").speech()
+speech = Text("Hello world").speech()
 
 # Previous API returned a Speech object, so we can just call
 # the text() method to get a prediction
@@ -93,8 +94,10 @@ print(p.text) # 'hello world'
 
 #### Listen for a specified amount of time
 ```python
+from auroraapi.speech import listen
+
 # Listen for 3 seconds (silence is automatically trimmed)
-speech = aurora.Speech.listen(length=3)
+speech = listen(length=3)
 
 # Convert to text
 p = speech.text()
@@ -105,10 +108,12 @@ print(p.text) # prints the prediction
 
 Calling this API will start listening and will automatically stop listening after a certain amount of silence (default is 1.0 seconds).
 ```python
+from auroraapi.speech import listen
+
 # Start listening until 1.0s of silence
-speech = aurora.Speech.listen()
+speech = listen()
 # Or specify your own silence timeout (0.5 seconds shown here)
-# speech = aurora.Speech.listen(silence_len=0.5)
+speech = listen(silence_len=0.5)
 
 # Convert to text
 p = speech.text()
@@ -120,18 +125,20 @@ print(p.text) # prints the prediction
 Continuously listen and retrieve speech segments. Note: you can do anything with these speech segments, but here we'll convert them to text. Just like the previous example, these segments are demarcated by silence (1.0 second by default) and can be changed by passing the `silence_len` parameter. Additionally, you can make these segments fixed length (as in the example before the previous) by setting the `length` parameter.
 
 ```python
+from auroraapi.speech import continuously_listen
+
 # Continuously listen and convert to speech (blocking example)
-for speech in aurora.Speech.continuously_listen():
+for speech in continuously_listen():
 	p = speech.text()
 	print(p.text)
 
 # Reduce the amount of silence in between speech segments
-for speech in aurora.Speech.continuously_listen(silence_len=0.5):
+for speech in continuously_listen(silence_len=0.5):
 	p = speech.text()
 	print(p.text)
 
 # Fixed-length speech segments of 3 seconds
-for speech in aurora.Speech.continuously_listen(length=3.0):
+for speech in continuously_listen(length=3.0):
 	p = speech.text()
 	print(p.text)
 ```
@@ -141,12 +148,23 @@ for speech in aurora.Speech.continuously_listen(length=3.0):
 If you already know that you wanted the recorded speech to be converted to text, you can do it in one step, reducing the amount of code you need to write and also reducing latency. Using the `listen_and_transcribe` method, the audio that is recorded automatically starts uploading as soon as you call the method and transcription begins. When the audio recording ends, you get back the final transcription.
 
 ```python
-text = aurora.Speech.listen_and_transcribe(silence_len=0.5):
+from auroraapi.speech import listen_and_transcribe, continuously_listen_and_transcribe
+
+text = listen_and_transcribe(silence_len=0.5):
 print("You said: {}".format(text.text))
 
 # You can also use this in the same way as `continuously_listen`
-for text in aurora.Speech.continuously_listen_and_transcribe(silence_len=0.5):
+for text in continuously_listen_and_transcribe(silence_len=0.5):
 	print("You said: {}".format(text.text))
+```
+
+#### Listen and echo example
+
+```python
+from auroraapi.speech import continuously_listen_and_transcribe
+
+for text in continuously_listen_and_transcribe():
+    text.speech().audio.play()
 ```
 
 ### Interpret (Language Understanding)
@@ -156,8 +174,10 @@ The interpret service allows you to take any Aurora `Text` object and understand
 #### Basic example
 
 ```python
+from auroraapi.text import Text
+
 # create a Text object
-text = aurora.Text("what is the time in los angeles")
+text = Text("what is the time in los angeles")
 
 # call the interpret service. This returns an `Interpret` object.
 i = text.interpret()
@@ -172,6 +192,8 @@ print(i.entities) # { "location": "los angeles" }
 #### User query example
 
 ```python
+from auroraapi.text import Text
+
 while True:
 	# Repeatedly ask the user to enter a command
 	user_text = raw_input("Enter a command:")
@@ -179,7 +201,7 @@ while True:
 		break
 	
 	# Interpret and print the results
-	i = aurora.Text(user_text).interpret()
+	i = Text(user_text).interpret()
 	print(i.intent, i.entities)
 ```
 
@@ -188,10 +210,12 @@ while True:
 This example shows how easy it is to voice-enable a smart lamp. It responds to queries in the form of "turn on the lights" or "turn off the lamp". You define what `object` you're listening for (so that you can ignore queries like "turn on the music").
 
 ```python
+from auroraapi.speech import continuously_listen
+
 valid_words = ["light", "lights", "lamp"]
 valid_entities = lambda d: "object" in d and d["object"] in valid_words
 
-for speech in aurora.Speech.continuously_listen(silence_len=0.5):
+for speech in continuously_listen(silence_len=0.5):
 	i = speech.text().interpret()
 	if i.intent == "turn_on" and valid_entities(i.entities):
 		# do something to actually turn on the lamp
