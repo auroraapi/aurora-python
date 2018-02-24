@@ -1,11 +1,6 @@
 import requests, functools, json, inspect
-
-try:
-	from audio import *
-	from globals import __store
-except:
-	from .audio import *
-	from .globals import __store
+from auroraapi.globals import __store
+from auroraapi.audio import AudioFile
 
 BASE_URL = "https://api.auroraapi.com"
 TTS_URL = BASE_URL + "/v1/tts/"
@@ -51,7 +46,7 @@ def get_tts(text):
 	handle_error(r)
 
 	r.raw.read = functools.partial(r.raw.read, decode_content=True)
-	return AudioFile.create_from_http_stream(r.raw)
+	return AudioFile(r.raw.read())
 
 def get_interpret(text):
 	r = requests.get(INTERPRET_URL, params=[("text", text)], headers=get_headers())

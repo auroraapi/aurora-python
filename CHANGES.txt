@@ -1,3 +1,9 @@
+0.1.0
+------
+- BREAKING INTERFACE CHANGES
+- pretty much all functions changed, imports changed
+- there is almost nothing compatible with previous versions
+
 0.0.13
 ------
 - added listen_and_transcribe, continuous transcription
