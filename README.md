@@ -73,9 +73,9 @@ aurora.config.app_token = "YOUR_APP_TOKEN"   # put your app token here
 
 # open an existing WAV file (16-bit, mono, 16KHz WAV PCM)
 with open("test.wav", "rb") as f:
-	a = AudioFile(f.read())
-	p = Speech(a).text()
-	print(p.text) # 'hello world'
+  a = AudioFile(f.read())
+  p = Speech(a).text()
+  print(p.text) # 'hello world'
 ```
 
 #### Convert a previous Text API call to Speech
@@ -129,18 +129,18 @@ from auroraapi.speech import continuously_listen
 
 # Continuously listen and convert to speech (blocking example)
 for speech in continuously_listen():
-	p = speech.text()
-	print(p.text)
+  p = speech.text()
+  print(p.text)
 
 # Reduce the amount of silence in between speech segments
 for speech in continuously_listen(silence_len=0.5):
-	p = speech.text()
-	print(p.text)
+  p = speech.text()
+  print(p.text)
 
 # Fixed-length speech segments of 3 seconds
 for speech in continuously_listen(length=3.0):
-	p = speech.text()
-	print(p.text)
+  p = speech.text()
+  print(p.text)
 ```
 
 #### Listen and Transcribe
@@ -155,7 +155,7 @@ print("You said: {}".format(text.text))
 
 # You can also use this in the same way as `continuously_listen`
 for text in continuously_listen_and_transcribe(silence_len=0.5):
-	print("You said: {}".format(text.text))
+  print("You said: {}".format(text.text))
 ```
 
 #### Listen and echo example
@@ -164,7 +164,7 @@ for text in continuously_listen_and_transcribe(silence_len=0.5):
 from auroraapi.speech import continuously_listen_and_transcribe
 
 for text in continuously_listen_and_transcribe():
-    text.speech().audio.play()
+  text.speech().audio.play()
 ```
 
 ### Interpret (Language Understanding)
@@ -195,14 +195,14 @@ print(i.entities) # { "location": "los angeles" }
 from auroraapi.text import Text
 
 while True:
-	# Repeatedly ask the user to enter a command
-	user_text = raw_input("Enter a command:")
-	if user_text == "quit":
-		break
-	
-	# Interpret and print the results
-	i = Text(user_text).interpret()
-	print(i.intent, i.entities)
+  # Repeatedly ask the user to enter a command
+  user_text = raw_input("Enter a command:")
+  if user_text == "quit":
+    break
+  
+  # Interpret and print the results
+  i = Text(user_text).interpret()
+  print(i.intent, i.entities)
 ```
 
 #### Smart Lamp
@@ -216,13 +216,11 @@ valid_words = ["light", "lights", "lamp"]
 valid_entities = lambda d: "object" in d and d["object"] in valid_words
 
 for speech in continuously_listen(silence_len=0.5):
-	i = speech.text().interpret()
-	if i.intent == "turn_on" and valid_entities(i.entities):
-		# do something to actually turn on the lamp
-		print("Turning on the lamp")
-	elif i.intent == "turn_off" and valid_entities(i.entities):
-		# do something to actually turn off the lamp
-		print("Turning off the lamp")
+  i = speech.text().interpret()
+  if i.intent == "turn_on" and valid_entities(i.entities):
+    # do something to actually turn on the lamp
+    print("Turning on the lamp")
+  elif i.intent == "turn_off" and valid_entities(i.entities):
+    # do something to actually turn off the lamp
+    print("Turning off the lamp")
 ```
-
-
