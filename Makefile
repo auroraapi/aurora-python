@@ -8,3 +8,10 @@ dist:
 
 upload: dist
 	twine upload dist/$(PACKAGE_NAME)-$(PACKAGE_VERSION).tar.gz
+
+test:
+	python3 setup.py test
+
+clean:
+	find . -name "*.pyc" -delete
+	find . -name "__pycache__" -delete

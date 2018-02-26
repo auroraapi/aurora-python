@@ -1,6 +1,10 @@
 # general things to ignore
 build/
 dist/
+htmlcov/
+.coverage
+.eggs
+*cache
 *.egg-info/
 *.egg
 *.py[cod]
