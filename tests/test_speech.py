@@ -1,14 +1,11 @@
 import os, json, array, pytest, mock
 import auroraapi
+from tests.mocks import *
 from auroraapi.globals import _config
 from auroraapi.api import APIException
 from auroraapi.audio import *
 from auroraapi.text import Text
 from auroraapi.speech import *
-
-def mock_pyaudio_record(a, b):
-	with open("tests/assets/hw.wav", "rb") as f:
-		yield array.array('h', AudioFile(f.read()).audio.raw_data)
 
 class TestSpeech(object):
 	def setup(self):
