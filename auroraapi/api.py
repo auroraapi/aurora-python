@@ -9,13 +9,13 @@ INTERPRET_URL = BASE_URL + "/v1/interpret/"
 
 class APIException(Exception):
 	""" Raise an exception when querying the API """
-	def __init__(self, id, status, code, type, message):
+	def __init__(self, id=None, status=None, code=None, type=None, message=None):
 		self.id = id
 		self.status = status
 		self.code = code
 		self.type = type
 		self.message = message
-		super(APIException, self).__init__("[{}] {}".format(code, message))
+		super(APIException, self).__init__("[{}] {}".format(code if code != None else status, message))
 	
 	def __repr__(self):
 		return json.dumps({ 
@@ -38,8 +38,8 @@ def handle_error(r):
 		if "application/json" in r.headers["content-type"]:
 			raise APIException(**r.json())
 		if r.status_code == 413:
-			raise APIException(code="RequestEntityTooLarge", message="Request entity too large")
-		raise APIException(message=r.text)
+			raise APIException(code="RequestEntityTooLarge", message="Request entity too large", status=413, type="RequestEntityTooLarge")
+		raise APIException(message=r.text, status=r.status_code)
 
 def get_tts(text):
 	r = requests.get(TTS_URL, params=[("text", text)], headers=get_headers(), stream=True)

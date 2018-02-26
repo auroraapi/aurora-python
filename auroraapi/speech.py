@@ -23,6 +23,8 @@ class Speech(object):
 		:param audio an audio file
 		:type  audio auroraapi.audio.AudioFile
 		"""
+		if not isinstance(audio, AudioFile):
+			raise TypeError("audio must be an instance of auroraapi.audio.AudioFile")
 		self.audio = audio
 
 	def text(self):
