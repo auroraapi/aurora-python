@@ -15,3 +15,8 @@ test:
 clean:
 	find . -name "*.pyc" -delete
 	find . -name "__pycache__" -delete
+	rm -rf .pytest_cache htmlcov .coverage
+
+clean-all: clean
+	rm -rf .eggs *.egg-info dist
+

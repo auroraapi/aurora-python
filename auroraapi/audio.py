@@ -157,9 +157,11 @@ def stream(length=0, silence_len=1.0):
 		yield chunk.tostring()
 
 def _is_silent(data):
+	if len(data) == 0:
+		return True
 	return max(data) < SILENT_THRESH
 
-def _pyaudio_record(length=0, silence_len=1.0):
+def _pyaudio_record(length, silence_len):
 	p = pyaudio.PyAudio()
 	stream = p.open(
 		rate=RATE,
