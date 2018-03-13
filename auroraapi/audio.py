@@ -178,7 +178,7 @@ def _pyaudio_record(length, silence_len):
 		if not _is_silent(d):
 			break
 		data.extend(d)
-		if len(data) > 12 * BUF_SIZE:
+		if len(data) > 32 * BUF_SIZE:
 			data = data[BUF_SIZE:]
 
 	yield data

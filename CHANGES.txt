@@ -1,3 +1,7 @@
+0.1.2
+-----
+- Change previous change to be 1.25 seconds
+
 0.1.1
 ------
 - Keep 0.75s of data before speech starts to prevent cutting off of the first syllable
