@@ -9,7 +9,7 @@ except:
 	from io import BytesIO
 
 BUF_SIZE      = (2 ** 10)
-SILENT_THRESH = (2 ** 10)
+SILENT_THRESH = (2 ** 11)
 NUM_CHANNELS  = 1
 FORMAT        = pyaudio.paInt16
 RATE          = 16000
@@ -173,8 +173,15 @@ def _pyaudio_record(length, silence_len):
 	)
 
 	data = array.array('h')
-	while len(data) == 0 or _is_silent(data):
-		data = array.array('h', stream.read(BUF_SIZE, exception_on_overflow=False))
+	while True:
+		d = array.array('h', stream.read(BUF_SIZE, exception_on_overflow=False))
+		if not _is_silent(d):
+			break
+		data.extend(d)
+		if len(data) > 12 * BUF_SIZE:
+			data = data[BUF_SIZE:]
+
+	yield data
 
 	silent_for = 0
 	bytes_read = 0
