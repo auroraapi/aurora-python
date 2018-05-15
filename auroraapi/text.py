@@ -10,7 +10,7 @@ class Text(object):
 	perform actions such as converting it to speech, interpretting it, and more.
 	"""
 
-	def __init__(self, text):
+	def __init__(self, text=""):
 		"""
 		Initialize with some text
 		
@@ -18,13 +18,16 @@ class Text(object):
 		:type  text string
 		"""
 		self.text = text
+	
+	def __repr__(self):
+		return self.text
 
 	def speech(self):
 		""" Convert text to speech """
 		from auroraapi.speech import Speech
 		return Speech(get_tts(self.text))
 	
-	def interpret(self):
+	def interpret(self, model="general"):
 		""" Interpret the text and return the results """
 		from auroraapi.interpret import Interpret
-		return Interpret(get_interpret(self.text))
+		return Interpret(get_interpret(self.text, model))

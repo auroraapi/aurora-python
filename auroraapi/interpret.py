@@ -1,6 +1,4 @@
-###########################################################
-## Interpret                                             ##
-###########################################################
+import json
 
 class Interpret(object):
 	"""
@@ -19,5 +17,10 @@ class Interpret(object):
 	"""
 	def __init__(self, interpretation):
 		""" Construct an interpret object from the API response """
+		self.text = interpretation["text"]
 		self.intent = interpretation["intent"]
 		self.entities = interpretation["entities"]
+		self.raw = interpretation
+
+	def __repr__(self):
+		return json.dumps(self.raw, indent=2)
