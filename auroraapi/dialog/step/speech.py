@@ -7,7 +7,8 @@ class SpeechStep(Step):
     self.text = step["data"]["text"]
     self.step_name = step["data"]["stepName"]
 
-  def execute(self, context):
+  def execute(self, context, edge):
     sp = Text(self.text).speech()
     context.set_step_data(self.step_name, sp)
     sp.audio.play()
+    return edge.next()

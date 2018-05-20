@@ -9,5 +9,5 @@ class Step(object):
   def __repr__(self):
     return json.dumps(self.raw, indent=2)
   
-  def execute(self, context):
+  def execute(self, context, edge):
     raise NotImplementedError()
