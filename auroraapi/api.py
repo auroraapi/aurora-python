@@ -2,8 +2,8 @@ import requests, functools, json, inspect
 from auroraapi.globals import _config
 from auroraapi.audio import AudioFile
 
-#BASE_URL = "https://api.auroraapi.com"
-BASE_URL = "http://localhost:3000"
+BASE_URL = "https://api.auroraapi.com"
+# BASE_URL = "http://localhost:3000"
 TTS_URL = BASE_URL + "/v1/tts/"
 STT_URL = BASE_URL + "/v1/stt/"
 INTERPRET_URL = BASE_URL + "/v1/interpret/"
