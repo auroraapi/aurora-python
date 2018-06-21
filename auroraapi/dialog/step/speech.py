@@ -38,7 +38,6 @@ class SpeechStep(Step):
       replacements.append({ "original": match.group(1), "replacement": val })
 
     text = functools.reduce(lambda t, r: t.replace(r["original"], r["replacement"]), replacements, self.text)
-    print(text)
     sp = Text(text).speech()
     context.set_step_data(self.step_name, sp)
     sp.audio.play()
