@@ -31,3 +31,6 @@ class Text(object):
 		""" Interpret the text and return the results """
 		from auroraapi.interpret import Interpret
 		return Interpret(get_interpret(self.text, model))
+	
+	def context_dict(self):
+		return { "text": self.text }

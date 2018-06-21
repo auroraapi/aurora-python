@@ -24,3 +24,6 @@ class Interpret(object):
 
 	def __repr__(self):
 		return json.dumps(self.raw, indent=2)
+	
+	def context_dict(self):
+		return self.raw

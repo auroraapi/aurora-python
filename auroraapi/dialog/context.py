@@ -9,6 +9,11 @@ class DialogContext(object):
 	def set_step_data(self, key, value):
 		self.step[key] = value
 		self.on_update(self)
+
+	def get_step_data(self, key, default=None):
+		if not key in self.step:
+			return default
+		return self.step[key]
 	
 	def set_user_data(self, key, value):
 		self.user[key] = value

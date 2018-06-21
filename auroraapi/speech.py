@@ -31,6 +31,9 @@ class Speech(object):
 		""" Convert speech to text and get the prediction """
 		from auroraapi.text import Text
 		return Text(get_stt(self.audio)["transcript"])
+	
+	def context_dict(self):
+		return {}
 
 ###########################################################
 ## Listening functions                                   ##

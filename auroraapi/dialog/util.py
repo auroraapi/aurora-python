@@ -10,6 +10,13 @@ def assert_callable(obj, message="The object is not a function"):
   if not callable(obj):
     raise RuntimeError(message)
 
+def is_iterable(obj):
+  try:
+    _ = iter(obj)
+  except TypeError:
+    return False
+  return True
+
 def parse_optional(val, parser, default=None):
   try:
     return parser(val)
