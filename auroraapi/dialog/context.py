@@ -17,6 +17,7 @@ class DialogContext(object):
 	
 	def set_user_data(self, key, value):
 		self.user[key] = value
+		self.on_update(self)
 	
 	def get_user_data(self, key, default=None):
 		if not key in self.user:
@@ -26,3 +27,6 @@ class DialogContext(object):
 	def set_current_step(self, step):
 		self.current_step = step
 		self.on_update(self)
+	
+	def get_current_step(self):
+		return self.current_step

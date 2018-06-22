@@ -224,3 +224,61 @@ for speech in continuously_listen(silence_len=0.5):
     # do something to actually turn off the lamp
     print("Turning off the lamp")
 ```
+
+### Dialog Builder
+
+You can create a high-level outline of a conversation using the Dialog Builder, available in the Aurora Dashboard. Once you have create the dialog, its ID will be available to you in the "Conversation Details" sidebar (under "Conversation ID"). You can use this ID to create and run the entire conversation in just a few lines of code:
+
+```python
+# Import the package
+import auroraapi as aurora
+from auroraapi.dialog import Dialog
+
+# Set your application settings
+aurora.config.app_id    = "YOUR_APP_ID"     # put your app ID here
+aurora.config.app_token = "YOUR_APP_TOKEN"  # put your app token here
+
+# Create the Dialog with the ID from the Dialog Builder
+dialog = Dialog("DIALOG_ID")
+
+# Run the dialog
+dialog.run()
+```
+
+If you've used a UDF (User-Defined Function) in the Dialog Builder, you can write the corresponding function and register it to the dialog using the `set_function` function. The UDF must take one argument, which is the dialog context. You can use it to retrieve data from other steps in the dialog and set custom data for future use (both in UDFs and in the builder).
+
+If the UDF in the dialog builder has branching enabled, then you can return `True` or `False` to control which branch is taken.
+
+```python
+from auroraapi.dialog import Dialog
+
+def udf(context):
+  # get data for a particular step
+  data = context.get_step_data("step_id")
+  # set some custom data
+  context.set_user_data("id", "some data value")
+  # return True to take the upward branch in the dialog builder
+  return True
+
+dialog = Dialog("DIALOG_ID")
+dialog.set_function("udf_id", udf)
+dialog.run()
+```
+
+Here, `step_id` is the ID of a step in the dialog builder and `udf_id` is the ID of the UDF you want to register a function for. `id` is an arbitrary string you can use to identify the data you are setting.
+
+You can also set a function when creating the `Dialog` that lets you handle whenever the current step changes or context is changed.
+
+```python
+from auroraapi.dialog import Dialog
+
+def handle_update(context):
+  # this function is called whenever the current step is changed or
+  # whenever the data in the context is updated
+  # you can get the current dialog step like this
+  step = context.get_current_step()
+  print(step, context)
+
+dialog = Dialog("DIALOG_ID", on_context_update=handle_update)
+dialog.run()
+```
