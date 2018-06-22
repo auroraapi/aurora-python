@@ -3,9 +3,11 @@ from auroraapi.globals import _config
 from auroraapi.audio import AudioFile
 
 BASE_URL = "https://api.auroraapi.com"
+# BASE_URL = "http://localhost:3000"
 TTS_URL = BASE_URL + "/v1/tts/"
 STT_URL = BASE_URL + "/v1/stt/"
 INTERPRET_URL = BASE_URL + "/v1/interpret/"
+DIALOG_URL = BASE_URL + "/v1/dialog/"
 
 class APIException(Exception):
 	""" Raise an exception when querying the API """
@@ -48,8 +50,8 @@ def get_tts(text):
 	r.raw.read = functools.partial(r.raw.read, decode_content=True)
 	return AudioFile(r.raw.read())
 
-def get_interpret(text):
-	r = requests.get(INTERPRET_URL, params=[("text", text)], headers=get_headers())
+def get_interpret(text, model):
+	r = requests.get(INTERPRET_URL, params=[("text", text), ("model", model)], headers=get_headers())
 	handle_error(r)
 	return r.json()
 
@@ -61,5 +63,10 @@ def get_stt(audio, stream=False):
 
 	d = audio() if stream else audio.get_wav()
 	r = requests.post(STT_URL, data=d, headers=get_headers())
+	handle_error(r)
+	return r.json()
+
+def get_dialog(id):
+	r = requests.get(DIALOG_URL + id, headers=get_headers())
 	handle_error(r)
 	return r.json()

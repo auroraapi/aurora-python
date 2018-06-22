@@ -31,12 +31,15 @@ class Speech(object):
 		""" Convert speech to text and get the prediction """
 		from auroraapi.text import Text
 		return Text(get_stt(self.audio)["transcript"])
+	
+	def context_dict(self):
+		return {}
 
 ###########################################################
 ## Listening functions                                   ##
 ###########################################################
 
-def listen(length=0, silence_len=1.0):
+def listen(length=0, silence_len=0.5):
 	"""
 	Listen with the given parameters and return a speech segment
 	
@@ -47,7 +50,7 @@ def listen(length=0, silence_len=1.0):
 	"""
 	return Speech(record(length=length, silence_len=silence_len))
 
-def continuously_listen(length=0, silence_len=1.0):
+def continuously_listen(length=0, silence_len=0.5):
 	"""
 	Continually listen and yield speech demarcated by silent periods
 	
@@ -59,7 +62,7 @@ def continuously_listen(length=0, silence_len=1.0):
 	while True:
 		yield listen(length, silence_len)
 
-def listen_and_transcribe(length=0, silence_len=1.0):
+def listen_and_transcribe(length=0, silence_len=0.5):
 	"""
 	Listen with the given parameters, but simulaneously stream the audio to the
 	Aurora API, transcribe, and return a Text object. This reduces latency if
@@ -73,7 +76,7 @@ def listen_and_transcribe(length=0, silence_len=1.0):
 	from auroraapi.text import Text
 	return Text(get_stt(functools.partial(stream, length, silence_len), stream=True)["transcript"])
 
-def continuously_listen_and_transcribe(length=0, silence_len=1.0):
+def continuously_listen_and_transcribe(length=0, silence_len=0.5):
 	"""
 	Continuously listen with the given parameters, but simulaneously stream the
 	audio to the Aurora API, transcribe, and return a Text object. This reduces
