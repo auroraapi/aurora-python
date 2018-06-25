@@ -1,6 +1,7 @@
 import functools
 from auroraapi.audio import AudioFile, record, stream
 from auroraapi.api import get_stt
+from auroraapi.globals import _config
 
 ###########################################################
 ## Speech to Text                                        ##
@@ -30,7 +31,7 @@ class Speech(object):
 	def text(self):
 		""" Convert speech to text and get the prediction """
 		from auroraapi.text import Text
-		return Text(get_stt(self.audio)["transcript"])
+		return Text(get_stt(_config, self.audio)["transcript"])
 	
 	def context_dict(self):
 		return {}
@@ -74,7 +75,7 @@ def listen_and_transcribe(length=0, silence_len=0.5):
 	:type  silence_len float
 	"""
 	from auroraapi.text import Text
-	return Text(get_stt(functools.partial(stream, length, silence_len), stream=True)["transcript"])
+	return Text(get_stt(_config, functools.partial(stream, length, silence_len), stream=True)["transcript"])
 
 def continuously_listen_and_transcribe(length=0, silence_len=0.5):
 	"""

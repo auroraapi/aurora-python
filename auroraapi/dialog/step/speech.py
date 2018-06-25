@@ -8,8 +8,8 @@ def resolve_path(context, path):
   obj = None
   if step == "user":
     obj = context.user
-  elif step in context.step:
-    obj = context.step[step].context_dict()
+  elif step in context.steps:
+    obj = context.steps[step].context_dict()
   if not is_iterable(obj):
     return None
   
@@ -39,6 +39,6 @@ class SpeechStep(Step):
 
     text = functools.reduce(lambda t, r: t.replace(r["original"], r["replacement"]), replacements, self.text)
     sp = Text(text).speech()
-    context.set_step_data(self.step_name, sp)
+    context.set_step(self.step_name, sp)
     sp.audio.play()
     return edge.next()

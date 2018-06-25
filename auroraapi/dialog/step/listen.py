@@ -21,5 +21,5 @@ class ListenStep(Step):
     while len(text.text) == 0:
       text = listen_and_transcribe(**self.listen_settings)
     res = text.interpret(model=self.model) if self.interpret else text
-    context.set_step_data(self.step_name, res)
+    context.set_step(self.step_name, res)
     return edge.next()

@@ -1,8 +1,8 @@
-import json
 from auroraapi.api import get_dialog
 from auroraapi.dialog.context import DialogContext
 from auroraapi.dialog.graph import Graph
 from auroraapi.dialog.util import assert_callable, parse_date
+from auroraapi.globals import _config
 
 class DialogProperties(object):
 	def __init__(self, id, name, desc, appId, runForever, dateCreated, dateModified, graph, **kwargs):
@@ -17,7 +17,7 @@ class DialogProperties(object):
 
 class Dialog(object):
 	def __init__(self, id, on_context_update=None):
-		self.dialog = DialogProperties(**get_dialog(id)["dialog"])
+		self.dialog = DialogProperties(**get_dialog(_config, id)["dialog"])
 		self.context = DialogContext()
 		if on_context_update != None:
 			assert_callable(on_context_update, "The 'on_context_update' parameter must be a function that accepts one argument")

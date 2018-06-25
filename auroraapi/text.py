@@ -1,4 +1,5 @@
 from auroraapi.api import get_tts, get_interpret
+from auroraapi.globals import _config
 
 ###########################################################
 ## Text to Speech                                        ##
@@ -25,12 +26,12 @@ class Text(object):
 	def speech(self):
 		""" Convert text to speech """
 		from auroraapi.speech import Speech
-		return Speech(get_tts(self.text))
+		return Speech(get_tts(_config, self.text))
 	
 	def interpret(self, model="general"):
 		""" Interpret the text and return the results """
 		from auroraapi.interpret import Interpret
-		return Interpret(get_interpret(self.text, model))
+		return Interpret(get_interpret(_config, self.text, model))
 	
 	def context_dict(self):
 		return { "text": self.text }
