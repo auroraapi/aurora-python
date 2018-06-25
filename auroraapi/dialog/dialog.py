@@ -5,11 +5,12 @@ from auroraapi.dialog.graph import Graph
 from auroraapi.dialog.util import assert_callable, parse_date
 
 class DialogProperties(object):
-	def __init__(self, id, name, desc, appId, dateCreated, dateModified, graph, **kwargs):
+	def __init__(self, id, name, desc, appId, runForever, dateCreated, dateModified, graph, **kwargs):
 		self.id = id
 		self.name = name
 		self.desc = desc
 		self.app_id = appId
+		self.run_forever = runForever
 		self.date_created = parse_date(dateCreated)
 		self.date_modified = parse_date(dateModified)
 		self.graph = Graph(graph)
@@ -27,9 +28,12 @@ class Dialog(object):
 		self.context.udfs[id] = func
 
 	def run(self):
-		curr = self.dialog.graph.start
-		while curr != None and curr in self.dialog.graph.nodes:
-			step = self.dialog.graph.nodes[curr]
-			edge = self.dialog.graph.edges[curr]
-			self.context.set_current_step(step)
-			curr = step.execute(self.context, edge)
+		first_run = True
+		while first_run or self.run_forever:
+			curr = self.dialog.graph.start
+			while curr != None and curr in self.dialog.graph.nodes:
+				step = self.dialog.graph.nodes[curr]
+				edge = self.dialog.graph.edges[curr]
+				self.context.set_current_step(step)
+				curr = step.execute(self.context, edge)
+			first_run = False
