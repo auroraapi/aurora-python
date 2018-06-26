@@ -30,7 +30,7 @@ class CallParams(object):
     self.response_type = response_type
 
 class Backend(object):
-  def __init__(self, base_url, timeout=60000):
+  def __init__(self, base_url, timeout=60):
     self.base_url = base_url
     self.timeout = timeout
 

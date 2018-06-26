@@ -9,13 +9,14 @@ class AuroraBackend(Backend):
     super().__init__(base_url)
   
   def call(self, params):
-    # TODO: programatically use method other than GET
-    r = requests.get(
+    r = requests.request(
+      params.method,
       self.base_url + params.path,
       data=params.body,
       stream=params.chunked,
       params=params.query.items(),
       headers={ **params.credentials.headers, **params.headers },
+      timeout=self.timeout
     )
 
     if r.status_code != requests.codes.ok:
