@@ -29,7 +29,7 @@ class Dialog(object):
 
 	def run(self):
 		first_run = True
-		while first_run or self.run_forever:
+		while first_run or self.dialog.run_forever:
 			curr = self.dialog.graph.start
 			while curr != None and curr in self.dialog.graph.nodes:
 				step = self.dialog.graph.nodes[curr]

@@ -32,3 +32,6 @@ class DialogContext(object):
 	
 	def get_current_step(self):
 		return self.current_step
+
+	def get_previous_step(self):
+		return self.previous_step
