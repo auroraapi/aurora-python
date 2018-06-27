@@ -1,75 +1,57 @@
 import os, json, pytest
 from auroraapi.globals import _config
-from auroraapi.api import APIException
 from auroraapi.audio import AudioFile
-from auroraapi.text import Text
-from auroraapi.speech import Speech
+from auroraapi.errors import APIException
 from auroraapi.interpret import Interpret
+from auroraapi.speech import Speech
+from auroraapi.text import Text
+from tests.mocks.backend import MockBackend
 
 class TestText(object):
-	def test_create_no_argument(self):
-		with pytest.raises(TypeError):
-			t = Text()
-	
 	def test_create(self):
 		t = Text("test")
 		assert isinstance(t, Text)
 		assert t.text == "test"
-
-class TestTextNoCreds(object):
-	def test_interpret(self):
-		with pytest.raises(APIException):
-			Text("test").interpret()
 	
-	def test_speech(self):
-		with pytest.raises(APIException):
-			Text("test").speech()
+	def test___repr__(self):
+		t = Text("test")
+		assert repr(t) == "test"
+	
+	def test_context_dict(self):
+		t = Text("test")
+		d = t.context_dict()
+		assert len(d) == 1
+		assert d["text"] == "test"
 
 class TestTextInterpret(object):
 	def setup(self):
-		try:
-			_config.app_id = os.environ["APP_ID"]
-			_config.app_token = os.environ["APP_TOKEN"]
-			_config.device_id = os.environ["DEVICE_ID"]
-		except:
-			pass
-	
+		self.orig_backend = _config.backend
+		_config.backend = MockBackend()
+			
 	def teardown(self):
-		_config.app_id = None
-		_config.app_token = None
-		_config.device_id = None
+		_config.backend = self.orig_backend
 
 	def test_interpret(self):
+		_config.backend.set_expected_response(200, { "text": "hello", "intent": "greeting", "entities": {} })
 		t = Text("hello")
 		i = t.interpret()
 		assert isinstance(i, Interpret)
 		assert i.intent == "greeting"
-	
-	def test_interpret_empty_string(self):
-		with pytest.raises(APIException):
-			Text("").interpret()
 
 class TestTextSpeech(object):
 	def setup(self):
-		try:
-			_config.app_id = os.environ["APP_ID"]
-			_config.app_token = os.environ["APP_TOKEN"]
-			_config.device_id = os.environ["DEVICE_ID"]
-		except:
-			pass
+		self.orig_backend = _config.backend
+		_config.backend = MockBackend()
+		with open("tests/assets/hw.wav", "rb") as f:
+			self.audio_data = f.read()
 			
 	def teardown(self):
-		_config.app_id = None
-		_config.app_token = None
-		_config.device_id = None
-	
+		_config.backend = self.orig_backend
+
 	def test_speech(self):
+		_config.backend.set_expected_response(200, self.audio_data)
 		t = Text("hello")
 		s = t.speech()
 		assert isinstance(s, Speech)
 		assert isinstance(s.audio, AudioFile)
 		assert len(s.audio.audio) > 0
-	
-	def test_speech_empty_string(self):
-		with pytest.raises(APIException):
-			Text("").speech()

@@ -8,9 +8,9 @@ class TestGlobals(object):
 	
 	def test_assign_config(self):
 		c = Config()
-		c.app_id = "test"
-		c.app_token = "test123"
+		c.app_id = "app_id"
+		c.app_token = "app_token"
 
-		assert c.app_id == "test"
-		assert c.app_token == "test123"
+		assert c.app_id == "app_id"
+		assert c.app_token == "app_token"
 		assert c.device_id == None

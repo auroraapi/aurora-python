@@ -13,8 +13,8 @@ test:
 	python3 setup.py test
 
 clean:
-	find . -name "*.pyc" -delete
-	find . -name "__pycache__" -delete
+	find . -name "*.pyc" -exec rm -rf {} \+
+	find . -name "__pycache__" -exec rm -rf {} \+
 	rm -rf .pytest_cache htmlcov .coverage
 
 clean-all: clean

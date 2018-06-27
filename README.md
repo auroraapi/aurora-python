@@ -254,9 +254,11 @@ from auroraapi.dialog import Dialog
 
 def udf(context):
   # get data for a particular step
-  data = context.get_step_data("step_id")
+  data = context.get_step("step_id")
   # set some custom data
-  context.set_user_data("id", "some data value")
+  context.set_data("id", "some data value")
+  # you can get the data later
+  assert context.get_data("id") == "some data value"
   # return True to take the upward branch in the dialog builder
   return True
 
@@ -275,9 +277,11 @@ from auroraapi.dialog import Dialog
 def handle_update(context):
   # this function is called whenever the current step is changed or
   # whenever the data in the context is updated
-  # you can get the current dialog step like this
-  step = context.get_current_step()
-  print(step, context)
+  #
+  # you can get the current and previous dialog steps like this
+  curr = context.get_current_step()
+  prev = context.get_current_step()
+  print(curr, prev, context)
 
 dialog = Dialog("DIALOG_ID", on_context_update=handle_update)
 dialog.run()

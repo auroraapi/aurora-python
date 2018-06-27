@@ -3,20 +3,20 @@ from auroraapi.errors import APIException
 
 class MockBackend(Backend):
   def __init__(self):
-    self.response_code = 200
-    self.response_data = ""
-    self.called_params = {}
+    self.responses = []
 
   def set_expected_response(self, code, data):
-    self.response_code = code
-    self.response_data = data
-  
+    self.responses = [(code, data)]
+
+  def set_expected_responses(self, *res):
+    self.responses = list(res)
+
   def call(self, params):
-    self.called_params = params
-    if self.response_code != 200:
+    code, data = self.responses.pop(0)
+    if code != 200:
       try:
-        e = APIException(**self.response_data)
+        e = APIException(**data)
       except:
-        e = APIException(message=self.response_data, status=self.response_code)
+        e = APIException(message=data, status=code)
       raise e
-    return self.response_data
+    return data
