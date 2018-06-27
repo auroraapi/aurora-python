@@ -1,10 +1,10 @@
 from auroraapi.api.backend import CallParams, Credentials
 from auroraapi.audio import AudioFile
 
-TTS_URL = "/v1/tts/"
-STT_URL = "/v1/stt/"
-INTERPRET_URL = "/v1/interpret/"
 DIALOG_URL = "/v1/dialog/"
+INTERPRET_URL = "/v1/interpret/"
+STT_URL = "/v1/stt/"
+TTS_URL = "/v1/tts/"
 
 def get_tts(config, text):
 	return AudioFile(config.backend.call(CallParams(
@@ -25,6 +25,7 @@ def get_interpret(config, text, model):
 def get_stt(config, audio, stream=False):
 	return config.backend.call(CallParams(
 		path=STT_URL,
+		method="POST"
 		credentials=Credentials.from_config(config),
     # audio can either be an AudioFile (in case all of the data is known) or
     # it can be a generator function, which emits data as it gets known. We need
