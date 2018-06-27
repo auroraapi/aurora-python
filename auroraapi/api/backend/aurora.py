@@ -22,7 +22,7 @@ class AuroraBackend(Backend):
     if r.status_code != requests.codes.ok:
       if "application/json" in r.headers["content-type"]:
         raise APIException(**r.json())
-      # Handle the special case in case nginx doesn't return a JSON response for 413
+      # Handle the special case where nginx doesn't return a JSON response for 413
       if r.status_code == 413:
         raise APIException(code="RequestEntityTooLarge", message="Request entity too large", status=413, type="RequestEntityTooLarge")
       # A non JSON error occurred (very strange)
