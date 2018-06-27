@@ -25,7 +25,7 @@ def get_interpret(config, text, model):
 def get_stt(config, audio, stream=False):
 	return config.backend.call(CallParams(
 		path=STT_URL,
-		method="POST"
+		method="POST",
 		credentials=Credentials.from_config(config),
     # audio can either be an AudioFile (in case all of the data is known) or
     # it can be a generator function, which emits data as it gets known. We need
