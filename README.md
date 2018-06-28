@@ -9,7 +9,7 @@ The SDK is currently in a pre-alpha release phase. Bugs and limited functionalit
 
 ## Installation
 
-**The Recommended Python version is 3.0+**
+**The Recommended Python version is 3.5+**
 
 The Python SDK currently does not bundle the necessary system headers and binaries to interact with audio hardware in a cross-platform manner. For this reason, before using the SDK, you need to install `PortAudio`:
 
