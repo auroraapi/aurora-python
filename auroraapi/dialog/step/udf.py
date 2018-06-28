@@ -22,10 +22,10 @@ class UDFStep(Step):
     return value. Otherwise it proceeds normally.
 
     This step also sets the value returned from the registered function in the
-    dialog context under the key "value". For example, if you named this UDF
-    "udf_1", and your UDF returned a string, you can access it using
-    "${udf_1.value}". Similarly, if your UDF returned the object { "a": 10 }, you
-    can access the value `10` using "${udf_1.value.a}".
+    dialog context under the UDF ID. For example, if you named this UDF `udf_1`,
+    and your UDF returned a string, you can access it in the Dialog Builder using
+    `${udf_1}`. Similarly, if your UDF returned the object `{ "a": 10 }`, you
+    can access the value `10` using `${udf_1.a}`.
 
     Args:
       context: the dialog context
@@ -38,7 +38,7 @@ class UDFStep(Step):
       raise RuntimeError("No UDF registered for step '{}'".format(self.udf_id))
     
     val = context.udfs[self.udf_id](context)
-    context.set_step(self.udf_id, ContextWrapper(val))
+    context.set_step(self.udf_id, val)
     if isinstance(val, (int, bool)) and self.branch_enable:
       return edge.next_cond(val)
     return edge.next()

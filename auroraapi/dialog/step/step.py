@@ -15,7 +15,7 @@ class ContextWrapper(object):
   
   def context_dict(self):
     """ Returns the value in a dictionary similar to other steps """
-    return { "value": self.value }
+    return self.value
 
 
 class Step(object):

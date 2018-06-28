@@ -1,7 +1,7 @@
 import pytest
 from auroraapi.dialog.context import DialogContext
 from auroraapi.dialog.graph import GraphEdge
-from auroraapi.dialog.step.udf import UDFResponse, UDFStep
+from auroraapi.dialog.step.udf import UDFStep
 
 UDF = {
   "id": "udf_id",
@@ -11,17 +11,6 @@ UDF = {
     "branchEnable": False,
   },
 }
-
-class TestUDFResponse(object):
-  def test_create(self):
-    r = UDFResponse("value")
-    assert r.value == "value"
-  
-  def test_context_dict(self):
-    r = UDFResponse("value")
-    d = r.context_dict()
-    assert len(d) == 1
-    assert d["value"] == r.value
 
 class TestUDFStep(object):
   def test_create(self):
@@ -43,7 +32,7 @@ class TestUDFStep(object):
     c.udfs[UDF["data"]["stepName"]] = lambda ctx: False
     u = UDFStep(UDF)
     assert u.execute(c, e) == e.left
-    assert c.get_step(UDF["data"]["stepName"]).value == False
+    assert c.get_step(UDF["data"]["stepName"]) == False
   
   def test_execute_branch_enabled_left(self):
     e = GraphEdge("left", "right", "prev")
@@ -52,7 +41,7 @@ class TestUDFStep(object):
     UDF["data"]["branchEnable"] = True
     u = UDFStep(UDF)
     assert u.execute(c, e) == e.left
-    assert c.get_step(UDF["data"]["stepName"]).value == True
+    assert c.get_step(UDF["data"]["stepName"]) == True
   
   def test_execute_branch_enabled_left(self):
     e = GraphEdge("left", "right", "prev")
@@ -61,4 +50,4 @@ class TestUDFStep(object):
     UDF["data"]["branchEnable"] = True
     u = UDFStep(UDF)
     assert u.execute(c, e) == e.right
-    assert c.get_step(UDF["data"]["stepName"]).value == False
+    assert c.get_step(UDF["data"]["stepName"]) == False

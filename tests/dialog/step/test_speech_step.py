@@ -89,6 +89,15 @@ SPEECH_WITH_STEP_TEMPLATE = {
   },
 }
 
+SPEECH_WITH_UDF_TEMPLATE = {
+  "id": "speech_id",
+  "type": "speech",
+  "data": {
+    "text": "It is ${udf_name1.weather.temp} degrees right now in ${udf_name2}.",
+    "stepName": "speech_name",
+  },
+}
+
 class TestSpeechStep(object):
   def setup(self):
     self.orig_backend = _config.backend
@@ -119,6 +128,13 @@ class TestSpeechStep(object):
     c.set_data("profile", { "first": "first", "last": "last" })
     s = SpeechStep(SPEECH_WITH_USER_TEMPLATE)
     assert s.get_text(c) == "Hello first last. How are you?"
+
+  def test_get_text_udf_template(self):
+    c = DialogContext()
+    c.set_step("udf_name1", { "weather": { "temp": 70, "humidity": "80%" } })
+    c.set_step("udf_name2", "los angeles")
+    s = SpeechStep(SPEECH_WITH_UDF_TEMPLATE)
+    assert s.get_text(c) == "It is 70 degrees right now in los angeles."
 
   def test_get_text_missing_template(self):
     c = DialogContext()

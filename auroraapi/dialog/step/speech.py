@@ -10,11 +10,15 @@ def resolve_path(context, path):
   if step == "user":
     obj = context.user
   elif step in context.steps:
-    obj = context.steps[step].context_dict()
+    try:
+      obj = context.steps[step].context_dict()
+    except:
+      obj = context.steps[step]
   if not is_iterable(obj):
     return None
   
   while len(components) > 0:
+    print(obj, components)
     curr = components.pop(0)
     # Check if current path object is iterable
     if not is_iterable(obj):
@@ -63,6 +67,7 @@ class SpeechStep(Step):
       val = resolve_path(context, match.group(2))
       # TODO: do something if val not found
       replacements.append((match.group(1), str(val)))
+      print(match.group(1), val)
     return reduce(lambda t, r: t.replace(r[0], r[1]), replacements, self.text)
 
   def execute(self, context, edge):
