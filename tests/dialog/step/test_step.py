@@ -1,5 +1,5 @@
 import json, pytest
-from auroraapi.dialog.step.step import Step
+from auroraapi.dialog.step.step import ContextWrapper, Step
 
 STEP = {
   "id": "test",
@@ -8,6 +8,15 @@ STEP = {
     "stepName": "test_name",
   },
 }
+
+class TestContextWrapper(object):
+  def test_create(self):
+    c = ContextWrapper("value")
+    assert c.value == "value"
+  
+  def test_context_dict(self):
+    c = ContextWrapper({"a": 10})
+    assert c.context_dict() == { "a": 10 }
 
 class TestStep(object):
   def test_create(self):

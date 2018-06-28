@@ -10,6 +10,9 @@ def resolve_path(context, path):
   if step == "user":
     obj = context.user
   elif step in context.steps:
+    # check if the step has a context_dict() method
+    #   if not, then it's probably a UDF step's value,
+    #   which is just a plain object
     try:
       obj = context.steps[step].context_dict()
     except:
