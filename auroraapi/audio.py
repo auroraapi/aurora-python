@@ -4,9 +4,9 @@ from pydub.utils import make_chunks
 from pyaudio import PyAudio
 
 try:
-	from StringIO import StringIO as BytesIO
+  from StringIO import StringIO as BytesIO
 except:
-	from io import BytesIO
+  from io import BytesIO
 
 BUF_SIZE      = (2 ** 10)
 SILENT_THRESH = (2 ** 11)
@@ -15,186 +15,195 @@ FORMAT        = pyaudio.paInt16
 RATE          = 16000
 
 class AudioFile(object):
-	"""
-	AudioFile lets you play, manipulate, and create representations of WAV data.
-	"""
-	def __init__(self, audio):
-		"""
-		Creates an AudioFile.
+  """
+  AudioFile lets you play, manipulate, and create representations of WAV data.
 
-		:param audio the raw WAV data (including header)
-		:type string or byte array (anything that pydub.AudioSegment can accept)
-		"""
-		self.audio = AudioSegment(data=audio)
-		self.should_stop = False
-		self.playing = False
+  Attributes:
+    audio: the audio data encapsulated by this class
+    playing: indicates whether or not this AudioFile is currently being played
+  """
+  def __init__(self, audio):
+    """ Creates an AudioFile.
 
-	def write_to_file(self, fname):
-		"""
-		Writes the WAV data to the specified location
+    Args:
+      audio: a string or byte array containing raw WAV data (including header)
+    """
+    self.audio = AudioSegment(data=audio)
+    self.should_stop = False
+    self.playing = False
 
-		:param fname the file path to write to
-		:type  fname string
-		"""
-		self.audio.export(fname, format="wav")
+  def write_to_file(self, fname):
+    """ Writes the WAV data to the specified location
 
-	def get_wav(self):
-		"""
-		Returns a byte string containing the WAV data encapsulated in this object.
-		It includes the WAV header, followed by the WAV data.
-		"""
-		wav_data = BytesIO()
-		wav = wave.open(wav_data, "wb")
-		wav.setparams((self.audio.channels, self.audio.sample_width, self.audio.frame_rate, 0, 'NONE', 'not compressed'))
-		wav.writeframes(self.audio.raw_data)
-		wav.close()
-		return wav_data.getvalue()
+    Args:
+      fname: the file path to write to
+    """
+    self.audio.export(fname, format="wav")
 
-	def pad(self, seconds):
-		"""
-		Pads both sides of the audio with the specified amount of silence (in seconds)
+  def get_wav(self):
+    """
+    Returns a byte string containing the WAV data encapsulated in this object.
+    It includes the WAV header, followed by the WAV data.
+    """
+    wav_data = BytesIO()
+    wav = wave.open(wav_data, "wb")
+    wav.setparams((self.audio.channels, self.audio.sample_width, self.audio.frame_rate, 0, 'NONE', 'not compressed'))
+    wav.writeframes(self.audio.raw_data)
+    wav.close()
+    return wav_data.getvalue()
 
-		:param seconds the amount of silence to add (in seconds)
-		:type  seconds float
-		"""
-		self.audio = AudioSegment.silent(duration=seconds*1000, frame_rate=16000) + self.audio + AudioSegment.silent(duration=seconds*1000, frame_rate=16000)
-		return self
+  def pad(self, seconds):
+    """
+    Pads both sides of the audio with the specified amount of silence (in seconds)
 
-	def pad_left(self, seconds):
-		"""
-		Pads the left side of the audio with the specified amount of silence (in seconds)
+    Args:
+      seconds: the amount of silence to add (a float, in seconds)
+    """
+    self.audio = AudioSegment.silent(duration=seconds*1000, frame_rate=16000) + self.audio + AudioSegment.silent(duration=seconds*1000, frame_rate=16000)
+    return self
 
-		:param seconds the amount of silence to add (in seconds)
-		:type  seconds float
-		"""
-		self.audio = AudioSegment.silent(duration=seconds*1000, frame_rate=16000) + self.audio
-		return self
+  def pad_left(self, seconds):
+    """
+    Pads the left side of the audio with the specified amount of silence (in seconds)
 
-	def pad_right(self, seconds):
-		"""
-		Pads the right side of the audio with the specified amount of silence (in seconds)
+    Args:
+      seconds: the amount of silence to add (a float, in seconds)
+    """
+    self.audio = AudioSegment.silent(duration=seconds*1000, frame_rate=16000) + self.audio
+    return self
 
-		:param seconds the amount of silence to add (in seconds)
-		:type  seconds float
-		"""
-		self.audio = self.audio + AudioSegment.silent(duration=seconds*1000, frame_rate=16000)
-		return self
+  def pad_right(self, seconds):
+    """
+    Pads the right side of the audio with the specified amount of silence (in seconds)
 
-	def trim_silent(self):
-		""" Trims extraneous silence at the ends of the audio """
-		a = AudioSegment.empty()
-		for seg in silence.detect_nonsilent(self.audio):
-			a = a.append(self.audio[seg[0]:seg[1]], crossfade=0)
+    Args:
+      seconds: the amount of silence to add (a float, in seconds)
+    """
+    self.audio = self.audio + AudioSegment.silent(duration=seconds*1000, frame_rate=16000)
+    return self
 
-		self.audio = a
-		return self
+  def trim_silent(self):
+    """ Trims extraneous silence at the ends of the audio """
+    a = AudioSegment.empty()
+    for seg in silence.detect_nonsilent(self.audio):
+      a = a.append(self.audio[seg[0]:seg[1]], crossfade=0)
 
-	def play(self):
-		"""
-		Plays the underlying audio on the default output device. Although this call
-		blocks, you can stop playback by calling the stop() method
-		"""
-		p = pyaudio.PyAudio()
-		stream = p.open(
-			rate=self.audio.frame_rate,
-			format=p.get_format_from_width(self.audio.sample_width),
-			channels=self.audio.channels,
-			output=True
-		)
+    self.audio = a
+    return self
 
-		self.playing = True
-		for chunk in make_chunks(self.audio, 64):
-			if self.should_stop:
-				self.should_stop = False
-				break
-			stream.write(chunk.raw_data)
+  def play(self):
+    """
+    Plays the underlying audio on the default output device. Although this call
+    blocks, you can stop playback by calling the `stop` method in another thread
+    """
+    p = pyaudio.PyAudio()
+    stream = p.open(
+      rate=self.audio.frame_rate,
+      format=p.get_format_from_width(self.audio.sample_width),
+      channels=self.audio.channels,
+      output=True
+    )
 
-		self.playing = False
-		stream.stop_stream()
-		stream.close()
-		p.terminate()
+    self.playing = True
+    for chunk in make_chunks(self.audio, 64):
+      if self.should_stop:
+        self.should_stop = False
+        break
+      stream.write(chunk.raw_data)
 
-	def stop(self):
-		""" Stop playback of the audio """
-		if self.playing:
-			self.should_stop = True
+    self.playing = False
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
+
+  def stop(self):
+    """ Stop playback of the audio """
+    if self.playing:
+      self.should_stop = True
 
 def record(length=0, silence_len=1.0):
-	"""
-	Records audio according to the given parameters and returns an instance of
-	an AudioFile with the recorded audio
-	"""
-	data = array.array('h')
-	for chunk in _pyaudio_record(length, silence_len):
-		data.extend(chunk)
+  """ Records audio according to the given parameters
+  
+  Args:
+    length: the length of time (seconds) to record for. If 0, it will record
+      indefinitely, until the specified amount of silence (default 0.0)
+    silence_len: the amount of silence (seconds) to allow before stopping the
+      recording (ignored if length != 0) (default 0.5)
 
-	p = pyaudio.PyAudio()
-	wav_data = BytesIO()
-	wav = wave.open(wav_data, "wb")
-	wav.setparams((NUM_CHANNELS, p.get_sample_size(FORMAT), RATE, 0, 'NONE', 'not compressed'))
-	wav.writeframes(data.tostring())
-	wav.close()
-	return AudioFile(wav_data.getvalue())
-	
+  Returns:
+    an instance of an AudioFile with the recorded audio
+  """
+  data = array.array('h')
+  for chunk in _pyaudio_record(length, silence_len):
+    data.extend(chunk)
+
+  p = pyaudio.PyAudio()
+  wav_data = BytesIO()
+  wav = wave.open(wav_data, "wb")
+  wav.setparams((NUM_CHANNELS, p.get_sample_size(FORMAT), RATE, 0, 'NONE', 'not compressed'))
+  wav.writeframes(data.tostring())
+  wav.close()
+  return AudioFile(wav_data.getvalue())
+  
 def stream(length=0, silence_len=1.0):
-	"""
-	Records audio, just like `record` does, except it doesn't return an AudioFile
-	upon completion. Instead, it yields the WAV file (header + data) as it becomes
-	available. Once caveat is that this function does not correctly populate the
-	data size in the WAV header. As such, a WAV file generated from this should
-	either be amended or should be read until EOF.
-	"""
-	# create fake WAV and yield it to get a WAV header
-	p = pyaudio.PyAudio()
-	wav_data = BytesIO()
-	wav = wave.open(wav_data, "wb")
-	wav.setparams((NUM_CHANNELS, p.get_sample_size(FORMAT), RATE, 0, 'NONE', 'not compressed'))
-	wav.close()
-	yield wav_data.getvalue()
+  """
+  Records audio, just like `record` does, except it doesn't return an AudioFile
+  upon completion. Instead, it yields the WAV file (header + data) as it becomes
+  available. Once caveat is that this function does not correctly populate the
+  data size in the WAV header. As such, a WAV file generated from this should
+  either be amended or should be read until EOF.
+  """
+  # create fake WAV and yield it to get a WAV header
+  p = pyaudio.PyAudio()
+  wav_data = BytesIO()
+  wav = wave.open(wav_data, "wb")
+  wav.setparams((NUM_CHANNELS, p.get_sample_size(FORMAT), RATE, 0, 'NONE', 'not compressed'))
+  wav.close()
+  yield wav_data.getvalue()
 
-	# yield audio until done listening
-	for chunk in _pyaudio_record(length, silence_len):
-		yield chunk.tostring()
+  # yield audio until done listening
+  for chunk in _pyaudio_record(length, silence_len):
+    yield chunk.tostring()
 
 def _is_silent(data):
-	if len(data) == 0:
-		return True
-	return max(data) < SILENT_THRESH
+  if len(data) == 0:
+    return True
+  return max(data) < SILENT_THRESH
 
 def _pyaudio_record(length, silence_len):
-	p = pyaudio.PyAudio()
-	stream = p.open(
-		rate=RATE,
-		format=FORMAT,
-		channels=NUM_CHANNELS,
-		frames_per_buffer=BUF_SIZE,
-		input=True,
-		output=True,
-	)
+  p = pyaudio.PyAudio()
+  stream = p.open(
+    rate=RATE,
+    format=FORMAT,
+    channels=NUM_CHANNELS,
+    frames_per_buffer=BUF_SIZE,
+    input=True,
+    output=True,
+  )
 
-	data = array.array('h')
-	while True:
-		d = array.array('h', stream.read(BUF_SIZE, exception_on_overflow=False))
-		if not _is_silent(d):
-			break
-		data.extend(d)
-		if len(data) > 32 * BUF_SIZE:
-			data = data[BUF_SIZE:]
+  data = array.array('h')
+  while True:
+    d = array.array('h', stream.read(BUF_SIZE, exception_on_overflow=False))
+    if not _is_silent(d):
+      break
+    data.extend(d)
+    if len(data) > 32 * BUF_SIZE:
+      data = data[BUF_SIZE:]
 
-	yield data
+  yield data
 
-	silent_for = 0
-	bytes_read = 0
-	while True:
-		d = array.array('h', stream.read(BUF_SIZE, exception_on_overflow=False))
-		silent_for = silent_for + (len(d)/float(RATE)) if _is_silent(d) else 0
-		bytes_read += len(d)
-		yield d
+  silent_for = 0
+  bytes_read = 0
+  while True:
+    d = array.array('h', stream.read(BUF_SIZE, exception_on_overflow=False))
+    silent_for = silent_for + (len(d)/float(RATE)) if _is_silent(d) else 0
+    bytes_read += len(d)
+    yield d
 
-		if length == 0 and silent_for > silence_len:
-			break
-		if length > 0 and bytes_read >= length*RATE:
-			break
+    if length == 0 and silent_for > silence_len:
+      break
+    if length > 0 and bytes_read >= length*RATE:
+      break
 
-	stream.stop_stream()
-	stream.close()
+  stream.stop_stream()
+  stream.close()
