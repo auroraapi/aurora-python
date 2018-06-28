@@ -102,7 +102,7 @@ class TestSpeechStep(object):
   def setup(self):
     self.orig_backend = _config.backend
     _config.backend = MockBackend()
-    with open("tests/assets/empty.wav", "rb") as f:
+    with open("tests/assets/hw.wav", "rb") as f:
       self.audio_data = f.read()
   
   def teardown(self):
